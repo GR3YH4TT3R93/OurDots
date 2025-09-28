@@ -1,0 +1,4 @@
+### Cursor
+
+seat * hide_cursor 5000
+seat * hide_cursor when-typing enable

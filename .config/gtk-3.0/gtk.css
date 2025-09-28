@@ -1,0 +1,5 @@
+@import 'colors.css';
+/* Keep dark text when hovering over selected items */
+*:selected:hover {
+    color: @theme_selected_fg_color_breeze; /* #282c34 - dark */
+}

@@ -1,0 +1,12 @@
+### Idle configuration
+
+exec swayidle -w \
+         timeout 300 'ddcutil setvcp 10 50' resume 'ddcutil setvcp 10 100' \
+         timeout 540 'ddcutil setvcp 10 10' resume 'ddcutil setvcp 10 100' \
+         timeout 600 'swaylock -f -c 000000' \
+	 timeout 601 'swaymsg "output * power off"' resume 'swaymsg "output * power on" && sleep 1 && ddcutil setvcp 10 100' \
+         before-sleep 'swaylock -f -c 000000'
+
+# This will lock your screen after 300 seconds of inactivity, then turn off
+# your displays after another 300 seconds, and turn your screens back on when
+# resumed. It will also lock your screen before your computer goes to sleep.

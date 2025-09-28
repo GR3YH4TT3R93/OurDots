@@ -1,0 +1,91 @@
+### Variables
+# #
+# # Set proper environment variables for this session
+# sway does not set DISPLAY/WAYLAND_DISPLAY in the systemd user environment
+# See FS#63021
+# Adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
+
+# Upstream refuses to set XDG_CURRENT_DESKTOP so we have to.
+exec systemctl --user set-environment XDG_CURRENT_DESKTOP=sway
+exec systemctl --user import-environment DISPLAY \
+                                         SWAYSOCK \
+                                         WAYLAND_DISPLAY \
+	                                 I3SOCK \
+	                                 XCURSOR_SIZE \
+	                                 XCURSOR_THEME \
+	                                 XDG_CURRENT_DESKTOP \
+                                         XDG_SESSION_TYPE
+
+exec hash dbus-update-activation-environment 2>/dev/null && \
+	dbus-update-activation-environment --systemd DISPLAY \
+		                         SWAYSOCK \
+		                         XDG_CURRENT_DESKTOP=sway \
+		                         XCURSOR_SIZE \
+		                         XCURSOR_THEME \
+		                         WAYLAND_DISPLAY
+
+# Modifiers
+set {
+  # Logo key
+  $mod Mod4
+  # Alt
+  $mod2 Mod1
+  $mod3 Ctrl
+}
+
+# Home row direction keys, like vim
+set {
+  $left h
+  $down j
+  $up k
+  $right l
+}
+
+# Monitor settings
+set {
+  # monitor output name
+  $monitor1 HDMI-A-1
+  # Monitor resolution and refresh rate
+  $monitorRR1 "2560x1440@144.00Hz"
+}
+
+# Preferred applications
+set {
+# browser
+  $browser librewolf
+# file manager
+  $file_manager thunar
+# 3D modeler
+  $3dmodeler blender
+# game engine
+  $game_engine_cmd godot
+  $game_engine_class Godot
+  $game_launcher steam
+# terminal emulator
+  $term wezterm start --class WezTerm --
+  $term_id org.wezfurlong.wezterm
+# terminal for scratchpad
+  $scratchpad_term wezterm-gui start --class scratchpad -- tmux attach -t SCRATCH \; send-keys clear Enter
+# application launcher
+  $menu rofi -show drun -matching fuzzy -prompt ""
+  $menu2 rofi -show combi -modes combi -combi-modes "window,drun,run" -matching fuzzy
+# Fancy rofi power menu
+  $pmenu ~/.config/rofi/scripts/power-menu.sh
+# Fancy rofi audio device menu
+  $amenu ~/.config/rofi/scripts/audio-switcher
+# Fancy rofi audio device menu
+  $mmenu ~/.config/rofi/scripts/input-switcher
+# Fancy file manager menu
+  $fmenu rofi -show filebrowser
+# Fancy file browser
+  $fbrowser env EDITOR=nvim wezterm-gui start --class Yazi -e zsh -lc yazi
+# Fancy clipboard manager menu
+  $cmenu rofi -modi "󱘞 :~/.config/rofi/scripts/cliphist-rofi-img" -show "󱘞 " -show-icons
+# fancy bluetooth device manager
+  $bmenu ~/.config/rofi/scripts/bluetooth-device-manager
+# Swaynag commands
+  $nag exec swaynagmode
+  $nag_exit $nag --exit
+  $nag_confirm $nag --confirm
+  $nag_select $nag --select
+}

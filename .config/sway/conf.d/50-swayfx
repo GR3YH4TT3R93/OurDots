@@ -1,0 +1,36 @@
+### SwayFX stuff:
+
+# SwayFX has window blurring, which gives a blurry transparency to window backgrounds.
+# Window blurring can either be truly transparent, with other apps visible behind the window, or use the wallpaper
+blur enable
+blur_xray disable
+blur_passes 2
+blur_radius 2
+# blur_noise <float value 0 - 1>
+# blur_brightness <float value 0 - 2>
+# blur_contrast <float value 0 - 2>
+# blur_saturation <float value 0 - 2>
+
+# SwayFX features window corners
+# corner_radius can be any number of pixels
+corner_radius 10
+smart_corner_radius enable
+# SwayFX also features window drop shadows, which, of course, can be enabled at any time
+shadows enable
+shadows_on_csd enable
+
+# You can also offset the shadow's position, make unfocused windows have different shadows, give shadows a nondefault color, and blur shadows
+shadow_inactive_color #000000FF
+# shadow_offset <x offset> <y offset>
+# shadow_blur_radius <integer value 0 - 99>
+shadow_blur_radius 14
+# shadow_color <hex color with alpha>
+shadow_color #000000FF
+
+# SwayFX also features
+# default_dim_inactive <float value 0.0 - 1.0>
+default_dim_inactive 0.5
+# for_window [CRITERIA_HERE] dim_inactive <float value 0.0 - 1.0>
+for_window [class="mpv"] dim_inactive 0.0
+# dim_inactive_colors.unfocused <hex color>
+# dim_inactive_colors.urgent <hex color>

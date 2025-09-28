@@ -1,0 +1,190 @@
+# Yay (AUR helper)
+alias y='yay' # Yay base command
+alias yf='sudo reflector --country US --latest 20 --fastest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist' # Yay Fetch mirrors (reflector)
+alias yu='yay -Syu' # Yay Update (AUR + system)
+alias yfu='yay -Syu --noconfirm' # Yay Full Update (no confirm)
+alias yi='yay -Syu' # Yay Install
+alias yif='yay -S' # Yay Install without updating repos
+alias yrm='yay -R' # Yay Remove
+alias yp='yay -Rns' # Yay Purge (remove with configs and dependencies)
+alias yc='yay -Sc' # Yay Clean cache
+alias ya='yay -Yc' # Yay Auto clean orphans
+alias yh='yay -Ps' # Yay History/info
+alias yl='yay -Q' # Yay List installed
+alias ys='yay -Ss' # Yay Search
+alias yv='yay -Si' # Yay View package info
+
+# Pacman (system packages)
+alias p='sudo pacman' # Pacman base command
+alias pf='sudo reflector --country US --latest 20 --fastest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist' # Pacman Fetch mirrors
+alias pu='sudo pacman -Syu' # Pacman Update
+alias pfu='sudo pacman -Syu --noconfirm' # Pacman Full Update
+alias pi='sudo pacman -S' # Pacman Install
+alias prm='sudo pacman -R' # Pacman Remove
+alias pp='sudo pacman -Rns' # Pacman Purge
+alias pc='sudo pacman -Sc' # Pacman Clean cache
+alias pa='sudo pacman -Rns $(pacman -Qtdq)' # Pacman Auto remove orphans
+alias ph='pacman -Qii' # Pacman History/info
+alias pl='pacman -Q' # Pacman List installed
+alias ps='pacman -Ss' # Pacman Search
+alias pv='pacman -Si' # Pacman View package info
+
+# Combined update with mirror refresh (useful for EOS)
+alias yuf='yf && yu' # Yay Update mirrors then system
+alias puf='pf && pu' # Pacman Update mirrors then system
+
+# Terraform (tofu) aliases
+alias tf='tofu'
+alias tfa='tofu apply'
+alias tfaa='tofu apply -auto-approve'
+alias tfc='tofu console'
+alias tfd='tofu destroy'
+alias tfd!='tofu destroy -auto-approve'
+alias tff='tofu fmt'
+alias tffr='tofu fmt -recursive'
+alias tfi='tofu init'
+alias tfo='tofu output'
+alias tfp='tofu plan'
+alias tfv='tofu validate'
+alias tfs='tofu state'
+alias tfsh='tofu show'
+alias tfr='tofu refresh'
+alias tft='tofu test'
+alias tfws='tofu workspace'
+
+# Bun Aliases
+# alias bun='grun ~/.bun/bin/bun'
+alias bn='bun' # A complete toolkit for building JavaScript apps
+alias bni='bun install' # Bun Install
+alias bnr='bun run' # Bun Run
+alias bnt='bun test' # Bun Test
+alias bnx='bun x' # Bunx
+alias bnrpl='bun repl' # Bun Repl
+alias bnini='bun init' # Bun Init
+alias bnc='bun create' # Bun Create
+alias bna='bun add' # Bun Add
+alias bnrm='bun remove' # Bun Remove
+alias bnu='bun update' #Bun Update
+alias bnl='bun link' # Bun Link
+alias bnul='bun unlink' # Bun Unlink
+alias bnpm='bun pm' # Bun Package Manager
+alias bnb='bun build' # Bun Build
+alias bnup='bun upgrade' # Bun Upgrade
+alias bnli='bun lint' # Run Prettier & ESLint
+alias bnlf='bun lintfix' # Run Prettier & ESLint, Fix Errors
+
+# PNPM Aliases
+alias p='pnpm' # PNPM Package Manager
+alias pa='pnpm add' # PNPM Add Package
+alias pad='pnpm add -D' # PNPM Add Dev Package
+alias pab='pnpm approve-builds' # PNPM approve-build
+alias pag='pnpm add -g' # PNPM Add Global Package
+alias pb='pnpm build' # PNPM Create Bundle Package
+alias pcl='pnpm config list' # PNPM Config List
+alias pex='pnpm exec' # PNPM Execute Command
+alias pi='pnpm install' # PNPM Install from package.json
+alias pid='pnpm install -D' # PNPM Install Dev Dependency
+alias pig='pnpm install -g' # PNPM Install Global Package
+alias pif='pnpm install --frozen-lockfile' # PNPM Lockfile not updated
+alias pin='pnpm install --no-lockfile' # PNPM Lockfile not generated
+alias pii='pnpm install --ignore-scripts' # PNPM Update Packages
+alias pu='pnpm update' # PNPM Update Packages
+alias pul='pnpm update --latest' # PNPM Update Packages Ignore Ranges
+alias pug='pnpm update -g' # PNPM Update Packages
+alias puf='pnpm update --frozen-lockfile' # PNPM Lockfile not updated
+alias pun='pnpm update --no-lockfile' # PNPM Lockfile not generated
+alias pui='pnpm update --ignore-scripts' # PNPM Update Packages
+alias pur='pnpm update --recursive' # PNPM Update Packages
+alias pr='pnpm run' # PNPM Run Script
+alias prm='pnpm remove' # PNPM Remove Package
+alias prmg='pnpm remove -g' # PNPM Remove Global Package
+alias psp='pnpm store prune' # PNPM Remove Unreferenced Packages Store
+alias prd='pnpm dev & xdg-open http://localhost:3000 && pkill pnpm' # PNPM Run Dev
+alias pl='pnpm lint' # Run Prettier & ESLint
+alias plf='pnpm lintfix' # Run Prettier & ESLint, Fix Errors
+alias pt='pnpm test' # PNPM Run Test
+alias pau='pnpm audit' # PNPM Audit Vuln Deps
+alias pauf='pnpm audit --fix' # PNPM Fix Vuln Deps
+alias px='pnpx' # PNPX CLI Tool
+
+# Nuxt CLI Tool PNPM Aliases
+alias pnx='pnpm nuxi' # Nuxt CLI Tool
+alias pnxc='pnpm nuxi cleanup' # Nuxi Cleanup generated nuxt files and caches
+alias pnxu='pnpm nuxi upgrade' # Nuxi Upgrade and Fix .nuxt & node_modules
+
+# Nuxt CLI Tool Aliases
+alias nx='nuxi' # Nuxt CLI Tool
+alias nxc='nuxi cleanup' # Nuxi Cleanup generated nuxt files and caches
+alias nxu='nuxi upgrade' # Nuxi Upgrade and Fix .nuxt & node_modules
+alias nxd='nuxi dev -o' # Nuxi Run Dev and Open Browser
+
+# Taskwarrior Aliases
+alias t='task' # Taskwarrior
+alias ta='task add' # Add Task to Taskwarrior
+alias td='task delete' # Delete Task from Taskwarrior
+alias tda='task purge' # Purge Tasks in Taskwarrior
+alias ts='task start' # Start Task in Taskwarrior
+alias tp='task stop' # End Task in Taskwarrior
+alias tc='task done' # Complete Task in Taskwarrior
+alias tm='task modify' # Modify Task Attribute
+alias tl='task list' # List all Tasks
+alias tlw='task entry.after:now-1wk list' # List Tasks created in the last Week
+alias tlm='task entry.after:now-1m list' # List Tasks created in the last Month
+alias tly='task entry.after:now-1y list' # List Tasks created in the last Month
+alias tlc='task completed' # List all Tasks Completed
+alias tlcw='task end.after:today-1wk completed' # List all Tasks Completed in the Last Week
+alias tlcm='task end.after:today-1m completed' # List all Tasks Completed in the Last Month
+alias tlcy='task end.after:today-1y completed' # List all Tasks Completed in the Last Year
+
+# Git Bare Aliases
+alias b='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME' #Git Bare
+alias bl='lazygit --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME' #Git Bare
+alias ba='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME add' # Git Bare Add
+alias bam='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME commit -p -S -m' #Git Bare Commit Patch Sign Message
+alias bas='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME submodule add' # Git Bare Submodule Add
+alias bs='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME status' # Git Bare Status
+alias bsu='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME submodule update --remote' # Git Bare Submodule Update
+alias bsum='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME submodule update --remote --merge' # Git Bare Submodule Update Merge
+alias bad='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME diff' # Git Bare Diff
+alias bpu='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME push --recurse-submodules=on-demand' # Git Bare Push Update Submodules
+alias bpl='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME pull' # Git Bare Pull
+alias bcd='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME checkout dev' # Git Checkout Dev
+alias bcm='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME checkout main' # Git Checkout Main
+alias bmd='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME checkout main && git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME merge --no-ff -m "Merge branch '\''dev'\''" dev' # Git Bare Checkout Main & Merge Dev into Main
+alias bmm='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME checkout dev && git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME merge main && git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME push' # Git Bare Checkout Dev & Merge Main into Dev
+alias buc='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME assume-unchanged' # Git Bare Assume Specified File(s) Unchanged
+alias bch='git --git-dir=$HOME/GitHub/dotfiles --work-tree=$HOME assume-changed' # Git Bare Assume Specified File(s) Changed
+
+# Git Aliases
+alias gan='git add -N' # Git add --intent-to-add
+alias gmd='git checkout test && git merge dev --no-ff -m "Merge branch '\''dev'\''" dev' # Git Chechout Test & Git Merge Dev into Test With Message
+alias gmt='git checkout main && git merge test --no-ff -m "Merge branch '\''test'\''"' # Git Chechout Main & Git Merge Dev into Main With Message
+alias gmm='git checkout dev && git merge main && git push && git checkout test && git merge main && git push && git checkout dev' # Git Chechout Dev & Git Merge Main into Dev & Test
+alias gcpm='git commit -pm' # Git Commit Patch Message
+
+# Safe File Management Aliases
+alias mv='mv -i' # Safe Move
+alias rm='rm -i' # Safe Remove
+alias cp='cp -i' # Safe Copy
+
+# btrfs aliases
+alias gss='sudo /etc/grub.d/41_snapshots-btrfs && grub-mkconfig -o /boot/grub/grub.cfg' # Generate grub snapshot entry
+
+
+#Random Aliases
+alias uwu='yay' # Nala upgrade -y
+alias uu='apt update && apt upgrade'
+alias 10k='p10k configure' # Configure Powerlevel10k
+alias ou='omz update' # Manually Update Oh My Zsh
+alias e='$EDITOR' # A highly customizable editor
+alias f='yazi' #The better File Manager
+alias tm='tmux' # Terminal Multiplexer
+alias ghb='cd ~/GitHub' # Jump to GitHub Projects
+alias ct='clear' # Clear Terminal
+alias cl='clear && fastfetch' # Clear Terminal Fancily
+alias sudo='sudo ' # Preserve Aliases
+alias neoup='~/.config/scripts/neovim_updater.sh' # Update Neovim
+alias ff='fastfetch' # FastFetch
+alias q='tmux detach -P' # Quick Tmux Detach
+alias lg='lazygit' # LazyGit
+alias zj='zellij' # Zellij

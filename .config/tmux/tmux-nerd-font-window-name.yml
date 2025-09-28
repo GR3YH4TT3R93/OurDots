@@ -1,0 +1,11 @@
+---
+config:
+  fallback-icon: ''
+  mutli-pane-icon: 
+  show-name: false
+  icon-position: left
+icons:
+  ssh: 
+  zsh: ''
+  nvim: 
+  fastfetch: 

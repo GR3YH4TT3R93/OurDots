@@ -1,0 +1,11 @@
+# assign [app_id="$term_id"] workspace number 1
+# assign [app_id="$browser"] workspace number 1
+assign [class="$game_engine_class"] workspace number 2
+assign [app_id="$3dmodeler"] workspace number 2
+assign [class="$game_launcher"] workspace number 3
+
+# exec $term
+exec $scratchpad_term
+# exec $browser
+# exec $game_engine_cmd
+# exec $game_launcher

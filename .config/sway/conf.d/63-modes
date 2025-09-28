@@ -1,0 +1,54 @@
+### Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    # Ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+### Swaynagmode confirmations:
+mode "nag" {
+  bindsym {
+    Ctrl+d    mode "default"
+
+    Ctrl+c    $nag_exit
+    q         $nag_exit
+    Escape    $nag_exit
+
+    Return    $nag_confirm
+    Shift+x   $nag_confirm
+
+    Tab       $nag_select prev
+    Shift+Tab $nag_select next
+
+    Left      $nag_select next
+    $left      $nag_select next
+    Right     $nag_select prev
+    $right     $nag_select prev
+
+    Up        $nag_select next
+    $up        $nag_select next
+    Down      $nag_select prev
+    $down      $nag_select prev
+  }
+}
+bindsym {
+    $mod+Shift+e $nag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit' -b 'Reload' -b 'Yes' 'swaymsg reload'
+}
+swaynag_command $nag -R

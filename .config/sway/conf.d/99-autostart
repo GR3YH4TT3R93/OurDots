@@ -1,0 +1,37 @@
+### Autostart
+
+# Wallpaper setter
+exec --no-startup-id waypaper --restore # set to --random for random wallpaper
+
+# Golden Ratio window tiling
+exec --no-startup-id autotiling
+
+# Swaddle, Swayidle inhibitor when watching content or listening to audio
+exec --no-startup-id swaddle
+
+# Steam tray icon
+exec --no-startup-id steam -silent
+
+# Enable wifi
+exec --no-startup-id nm-applet --indicator
+
+# Enable Bluetooth manager
+# exec --no-startup-id blueman-applet
+
+# Enable swaync daemon
+exec --no-startup-id swaync
+
+# Enable swaync widgets
+exec swaync-widgets
+
+# Enable Swayosd
+exec --no-startup-id swayosd-server
+
+# Enable clipboard manager
+exec --no-startup-id wl-paste --watch cliphist store
+
+# Enable Polkit authentication agent for graphical sudo prompts
+exec /usr/lib/polkit-kde-authentication-agent-1
+
+# Enable EasyEffects
+exec --no-startup-id easyeffects --gapplication-service
