@@ -1,0 +1,43 @@
+#!/usr/bin/env sh
+
+get_bluetooth_devices() {
+    bluetoothctl devices | while read -r _ mac name; do
+        if [ -n "$name" ]; then
+            echo "$mac|$name"
+        else
+            echo "$mac|$mac"
+        fi
+    done
+}
+
+set_bluetooth_device() {
+    selected_device="$1"
+    device_mac=$(echo "$selected_device" | cut -d'|' -f1)
+    device_name=$(echo "$selected_device" | cut -d'|' -f2)
+
+    if bluetoothctl connect "$device_mac"; then
+        notify-send "Bluetooth Device" "Connected to: $device_name"
+    else
+        notify-send --urgency=critical "Bluetooth Device" "Failed to connect to: $device_name"
+    fi
+}
+
+main() {
+    devices=$(get_bluetooth_devices)
+
+    if [ -z "$devices" ]; then
+        notify-send "Bluetooth Device Manager" "No Bluetooth devices found."
+        exit 1
+    fi
+
+    # Show only the device names in rofi
+    selected_device=$(echo "$devices" | cut -d'|' -f2 | rofi -dmenu -p "󰂱 ")
+
+    if [ -n "$selected_device" ]; then
+        # Find the full line (with MAC) that matches the selected name
+        full_line=$(echo "$devices" | grep "|$selected_device$")
+        set_bluetooth_device "$full_line"
+    fi
+}
+
+main

@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Fixed audio output switcher - using same approach as input-switcher
+
+get_audio_sinks() {
+    pactl list short sinks | while read -r line; do
+        sink_id=$(echo "$line" | awk '{print $1}')
+        sink_name=$(echo "$line" | awk '{print $2}')
+        sink_description=$(pactl list sinks | grep -A 10 "Sink #$sink_id" | grep "Description:" | cut -d: -f2- | sed 's/^[ \t]*//')
+        sink_state=$(pactl list sinks | grep -A 10 "Sink #$sink_id" | grep "State:" | awk '{print $2}')
+
+        # Skip easyeffects virtual source
+        if [[ "$sink_name" =~ easyeffects ]] || [[ "$sink_description" =~ [Ee]asy[Ee]ffects ]]; then
+            continue
+        fi
+        # Determine icon based on sink name/description - USE SAME ICONS AS INPUT-SWITCHER
+        icon=""
+        case "$sink_description" in
+            *"Headset"*|*"headset"*|*"Headphone"*)
+                icon=""  # Headphones icon - SAME AS INPUT
+                ;;
+            *"Speaker"*|*"speaker"*)
+                icon=""  # Speaker icon
+                ;;
+            *"HDMI"*|*"hdmi"*)
+                icon=""  # TV icon
+                ;;
+            *"USB"*|*"usb"*)
+                icon=""  # USB icon - SAME AS INPUT
+                ;;
+            *"Bluetooth"*|*"bluetooth"*)
+                icon=""  # Bluetooth icon - SAME AS INPUT
+                ;;
+            *)
+                icon=""  # Default speaker icon (CHANGED from music note)
+                ;;
+        esac
+
+        if [ "$sink_state" = "RUNNING" ]; then
+            echo -e "$icon\t$sink_description \u2713"
+        else
+            echo -e "$icon\t$sink_description"
+        fi
+    done
+}
+
+set_audio_sink() {
+    local selected_line="$1"
+    selected_description=$(echo "$selected_line" | cut -f2 | sed 's/ \u2713$//')
+
+    pactl list short sinks | while read -r line; do
+        sink_id=$(echo "$line" | awk '{print $1}')
+        sink_description=$(pactl list sinks | grep -A 10 "Sink #$sink_id" | grep "Description:" | cut -d: -f2- | sed 's/^[ \t]*//')
+
+        if [ "$sink_description" = "$selected_description" ]; then
+            pactl set-default-sink "$sink_id"
+            pactl list short sink-inputs | awk '{print $1}' | while read -r input; do
+                pactl move-sink-input "$input" "$sink_id"
+            done
+            notify-send "Audio Output" "Switched to: $selected_description"
+            break
+        fi
+    done
+}
+
+main() {
+    sinks_list=$(get_audio_sinks)
+
+    # USE A WORKING ICON LIKE THE INPUT-SWITCHER - try speaker icon instead of music note
+    selected=$(echo -e "$sinks_list" | rofi -dmenu -p " " \
+        -no-show-icons \
+        -theme-str 'listview {lines: 6;}' )
+
+    if [ -n "$selected" ]; then
+        set_audio_sink "$selected"
+    fi
+}
+
+main

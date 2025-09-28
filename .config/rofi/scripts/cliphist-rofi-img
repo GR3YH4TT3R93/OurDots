@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+tmp_dir="/tmp/cliphist"
+rm -rf "$tmp_dir"
+if [[ -n "$1" ]]; then
+    cliphist decode <<<"$1" | wl-copy
+    exit
+fi
+mkdir -p "$tmp_dir"
+read -r -d '' prog <<EOF
+/^[0-9]+\s<meta http-equiv=/ { next }
+match(\$0, /^([0-9]+)\t\[\[ binary data (.*) (jpg|jpeg|png|bmp) (.*) \]\]/, grp) {
+    system("echo " grp[1] "\\\\\t | cliphist decode >$tmp_dir/"grp[1]"."grp[3])
+    print grp[1]"\tsway-screenshot " grp[2] " " grp[3] " " grp[4]"\0icon\x1f$tmp_dir/"grp[1]"."grp[3]
+    next
+}
+{
+    match(\$0, /^([0-9]+)\t(.*)/, arr)
+    print arr[1]"\t"arr[2]
+}
+EOF
+cliphist list | gawk "$prog"

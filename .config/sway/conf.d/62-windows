@@ -1,0 +1,58 @@
+## Steam window rules
+
+for_window [class="steam" title="Settings"] floating enable
+for_window [class="steam" title="Friends List"] floating enable
+for_window [class="PixiEditor.Desktop" title="Settings"] floating enable
+for_window [class="PixiEditor.Desktop" title="Hello there"] floating enable
+for_window [class="Godot" title="Create New Node"] floating enable
+for_window [class="Godot" title="File Dialog"] floating enable
+for_window [class="Godot" title="Save"] floating enable
+for_window [class="Godot" title="Open"] floating enable
+for_window [class="Godot" title="Please Confirm..."] floating enable
+for_window [class="Godot" title="Settings"] floating enable
+for_window [class="Godot" title="Alert!"] floating enable
+for_window [class="Godot" title="Create New Resource"] floating enable
+for_window [class="Godot" title="^Connect.*"] floating enable
+for_window [app_id="blender" title="Preferences"] floating enable
+for_window [app_id="scratchpad"] move scratchpad, move position center
+for_window [app_id="btop"] floating enable, move position center
+for_window [window_type="dialog"] floating enable
+for_window [title="^Settings.*"] floating enable
+for_window [app_id="Yazi"] floating enable
+for_window [title="KCalc"] floating enable
+
+## Sway idle inhibitor exceptions
+for_window [class="^steam_app_.*"] inhibit_idle focus
+for_window [app_id="^steam_app_.*"] inhibit_idle focus
+for_window [class="Steam"] inhibit_idle focus
+for_window [app_id="steam"] inhibit_idle focus
+for_window [class="lutris"] inhibit_idle focus
+for_window [app_id="lutris"] inhibit_idle focus
+for_window [class="heroic"] inhibit_idle focus
+for_window [app_id="heroic"] inhibit_idle focus
+for_window [class="GameHub"] inhibit_idle focus
+for_window [app_id="gamehub"] inhibit_idle focus
+for_window [title=".*Wine.*"] inhibit_idle focus
+for_window [class="wine"] inhibit_idle focus
+for_window [instance="wine"] inhibit_idle focus
+for_window [instance="retroarch"] inhibit_idle focus
+
+## More window rules from: https://github.com/EndeavourOS-Community-Editions/sway/blob/main/.config/sway/config.d/application_defaults
+for_window [class="Yad" instance="yad"] floating enable
+for_window [app_id="yad"] floating enable
+for_window [app_id="blueman-manager"] floating enable,  resize set width 40 ppt height 30 ppt
+for_window [app_id="pavucontrol" ] floating enable, resize set width 40 ppt height 30 ppt
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [window_role="About"] floating enable
+for_window [title="File Operation Progress"] floating enable, border pixel 1, sticky enable, resize set width 40 ppt height 30 ppt
+for_window [app_id="floating_shell_portrait"] floating enable, border pixel 1, sticky enable, resize set width 30 ppt height 40 ppt
+for_window [title="Picture in picture"] floating enable, sticky enable
+for_window [title="waybar_htop"] floating enable, resize set width 70 ppt height 70 ppt
+for_window [title="waybar_nmtui"] floating enable
+for_window [title="Save File"] floating enable
+for_window [app_id="firefox" title="Firefox — Sharing Indicator"] kill

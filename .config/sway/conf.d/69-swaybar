@@ -1,0 +1,5 @@
+### Status Bar:
+
+bar {
+  swaybar_command waybar
+}
