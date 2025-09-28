@@ -1,0 +1,21 @@
+### Autostart
+#
+exec autotiling
+#
+# Swaddle, Swayidle inhibitor when watching content or listening to audio
+exec_always --no-startup-id swaddle
+#
+# Enable wifi
+exec --no-startup-id nm-applet
+#
+# Enable swaync daemon
+exec swaync
+#
+# Enable Swayosd
+exec swayosd-server
+#
+# Enable clipboard manager
+exec --no-startup-id wl-paste --watch cliphist store
+#
+# Enable Polkit authentication agent for graphical sudo prompts
+exec "/usr/lib/polkit-kde-authentication-agent-1"

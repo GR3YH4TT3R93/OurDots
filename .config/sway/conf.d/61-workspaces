@@ -1,0 +1,15 @@
+# Only assign Steam since it should always go to workspace 3
+
+# Run startup script only on initial login
+# exec ~/.config/sway/scripts/startup.sh
+
+assign [app_id="$term_id"] workspace 1
+assign [app_id="$browser"] workspace 1
+assign [class="$game_engine_class"] workspace 2
+assign [class="$game_launcher"] workspace 3
+
+# exec $term
+exec $scratchpad_term
+# exec $browser
+# exec $game_engine_cmd
+# exec $game_launcher
