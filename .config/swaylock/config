@@ -1,0 +1,25 @@
+ignore-empty-password
+show-failed-attempts
+daemonize
+
+image=~/.config/waypaper/backgrounds/onedark/od_neon_warm.png
+font=FiraCode Nerd Font Mono
+font-size=12
+inside-color=#98c379aa
+inside-clear-color=#98c379aa
+inside-caps-lock-color=#e06c75aa
+inside-ver-color=#73b8f1aa
+inside-wrong-color=#e06c75aa
+key-hl-color=#98c379ff
+ring-color=#98c379aa
+ring-clear-color=#56b6c2aa
+ring-caps-lock-color=#e06c75aa
+ring-ver-color=#73b8f1aa
+ring-wrong-color=#e06c75aa
+separator-color=#abb2bfaa
+text-color=#3b3f4c
+text-clear-color=#3b3f4c
+text-ver-color=#3b3f4c
+text-wrong-color=#3b3f4c
+text-caps-lock-color=#3b3f4c
+line-color=#3b3f4caa

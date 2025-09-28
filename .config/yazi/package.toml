@@ -1,0 +1,9 @@
+[[plugin.deps]]
+use = "imsi32/yatline"
+rev = "88bd1c5"
+hash = "981acbe9b758b1af3a8154c932bb936d"
+
+[[flavor.deps]]
+use = "BennyOe/onedark"
+rev = "668d71d"
+hash = "5e616226586a2af1ecaf116e08e9a8ec"

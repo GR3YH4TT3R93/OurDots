@@ -1,0 +1,89 @@
+### Variables
+# #
+# # Set proper environment variables for this session
+# sway does not set DISPLAY/WAYLAND_DISPLAY in the systemd user environment
+# See FS#63021
+# Adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
+
+# Upstream refuses to set XDG_CURRENT_DESKTOP so we have to.
+exec systemctl --user set-environment XDG_CURRENT_DESKTOP=sway
+exec systemctl --user import-environment DISPLAY \
+                                         SWAYSOCK \
+                                         WAYLAND_DISPLAY \
+	                                 I3SOCK \
+	                                 XCURSOR_SIZE \
+	                                 XCURSOR_THEME \
+	                                 XDG_CURRENT_DESKTOP \
+                                         XDG_SESSION_TYPE
+
+exec hash dbus-update-activation-environment 2>/dev/null && \
+	dbus-update-activation-environment --systemd DISPLAY \
+		                         SWAYSOCK \
+		                         XDG_CURRENT_DESKTOP=sway \
+		                         XCURSOR_SIZE \
+		                         XCURSOR_THEME \
+		                         WAYLAND_DISPLAY
+
+# exec systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK I3SOCK XCURSOR_SIZE XCURSOR_THEME
+#
+# Logo key
+set $mod Mod4
+# Alt
+set $mod2 Mod1
+set $mod3 Ctrl
+#
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+#
+# Your monitor output name
+set $monitor1 HDMI-A-1
+# Your Monitor resolution and refresh rate
+set $monitorRR1 "2560x1440@144.00Hz"
+#
+# Your preferred browser application
+set $browser librewolf
+#
+# Your preferred 3D modeling application
+set $3dmodeler blender
+#
+# Your preferred game engine
+set $game_engine_cmd godot
+set $game_engine_class Godot
+#
+# Your preferred game launcher
+set $game_launcher steam
+#
+# Your preferred browser application
+set $browser librewolf
+#
+# Your preferred terminal emulator
+set $term wezterm start --class WezTerm --
+set $term_id org.wezfurlong.wezterm
+#
+# Your preferred terminal for scratchpad
+set $scratchpad_term wezterm start --class scratchpad -- tmux attach -t SCRATCH \; send-keys clear Enter
+#
+# Your preferred application launcher
+set $menu rofi -show drun -matching fuzzy -prompt ""
+set $menu2 rofi -show combi -modes combi -combi-modes "window,drun,run" -matching fuzzy
+#
+# Fancy rofi power menu
+set $pmenu ~/.config/rofi/scripts/power-menu.sh
+#
+# Fancy rofi audio device menu
+set $amenu ~/.config/rofi/scripts/audio-switcher
+#
+# Fancy rofi audio device menu
+set $mmenu ~/.config/rofi/scripts/input-switcher
+#
+# Fancy file manager menu
+set $fmenu rofi -show filebrowser
+#
+# Fancy clipboard manager menu
+set $cmenu rofi -modi clipboard:~/.config/rofi/scripts/cliphist-rofi-img -show clipboard -show-icons
+#
+# Your preferred file manager
+set $file_manager thunar

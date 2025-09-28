@@ -1,0 +1,28 @@
+### Autostart
+#
+# Wallpaper setter
+exec --no-startup-id waypaper --random # set to --restore for persistent wallpaper
+#
+# Golden Ratio window tiling
+exec --no-startup-id autotiling
+#
+# Swaddle, Swayidle inhibitor when watching content or listening to audio
+exec --no-startup-id swaddle
+#
+# Enable wifi
+exec --no-startup-id nm-applet
+#
+# Enable swaync daemon
+exec --no-startup-id swaync
+#
+# Enable Swayosd
+exec --no-startup-id swayosd-server
+#
+# Enable clipboard manager
+exec --no-startup-id wl-paste --watch cliphist store
+#
+# Enable Polkit authentication agent for graphical sudo prompts
+exec /usr/lib/polkit-kde-authentication-agent-1
+#
+# Free USB Mic
+# exec $HOME/.config/scripts/mic-restart.sh
