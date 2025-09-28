@@ -1,0 +1,28 @@
+#
+## Steam window rules
+#
+for_window [class="steam" title="Settings"] floating enable
+for_window [class="steam" title="Friends List"] floating enable
+for_window [class="PixiEditor.Desktop" title="Settings"] floating enable
+for_window [class="PixiEditor.Desktop" title="Hello there"] floating enable
+for_window [class="Godot" title="Settings"] floating enable
+for_window [class="Godot" title="Alert!"] floating enable
+for_window [app_id="scratchpad"] move scratchpad, move position center
+for_window [app_id="btop"] floating enable, move position center
+for_window [window_type="dialog"] floating enable
+for_window [window_role="dialog"] floating enable
+#
+## Sway idle inhibitor exceptions
+for_window [class="^steam_app_.*"] inhibit_idle focus
+for_window [app_id="^steam_app_.*"] inhibit_idle focus
+for_window [class="Steam"] inhibit_idle focus
+for_window [app_id="steam"] inhibit_idle focus
+for_window [class="lutris"] inhibit_idle focus
+for_window [app_id="lutris"] inhibit_idle focus
+for_window [class="heroic"] inhibit_idle focus
+for_window [app_id="heroic"] inhibit_idle focus
+for_window [class="GameHub"] inhibit_idle focus
+for_window [app_id="gamehub"] inhibit_idle focus
+for_window [title=".*Wine.*"] inhibit_idle focus
+for_window [class="wine"] inhibit_idle focus
+for_window [instance="wine"] inhibit_idle focus

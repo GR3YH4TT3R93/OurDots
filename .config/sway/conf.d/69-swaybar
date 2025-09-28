@@ -1,0 +1,24 @@
+### Status Bar:
+#
+# Read `man 5 sway-bar` for more information about this section.
+bar {
+    position bottom
+    height 15
+    status_padding 0
+    tray_output none
+
+    # When the status_command prints a new line to stdout, swaybar updates.
+    # The default just shows the current date and time.
+    status_command i3status-rs ~/.config/i3status-rust/config.toml
+
+    colors {
+        statusline #abb2bf
+        background #181a1fc0
+        focused_workspace #98c379 #98c379 #181a1f
+        inactive_workspace #32323200 #32323200 #5c6370
+    }
+
+    separator_symbol ""
+    workspace_buttons yes
+    binding_mode_indicator yes
+}

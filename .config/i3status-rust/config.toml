@@ -1,0 +1,70 @@
+icons_format = "{icon}"
+
+[theme]
+theme = "srcery"
+[theme.overrides]
+# idle_bg = "#282c34"     # bg0
+idle_bg = "#98c379"
+idle_fg = "#181a1f"     # blue
+info_bg = "#73b8f1"     # bg_blue
+info_fg = "#282c34"     # bg0
+good_bg = "#98c379"     # green
+good_fg = "#282c34"     # bg0
+warning_bg = "#e5c07b"  # yellow
+warning_fg = "#282c34"  # bg0
+critical_bg = "#e86671" # red
+critical_fg = "#282c34" # bg0
+# separator = "\ue0b2"
+separator = ""
+separator_bg = "auto"
+separator_fg = "auto"
+
+[icons]
+icons = "awesome4"
+
+[[block]]
+block = "disk_space"
+path = "/"
+info_type = "available"
+alert_unit = "GB"
+interval = 20
+warning = 20.0
+alert = 10.0
+format = " $icon  root: $available.eng(w:2) "
+[block.theme_overrides]
+idle_bg = "#848b9800"
+idle_fg = "#abb2bf"
+
+
+[[block]]
+block = "cpu"
+[block.theme_overrides]
+idle_bg = "#282c34"
+# idle_bg = "#5c6370"
+idle_fg = "#abb2bf"
+
+
+[[block]]
+block = "memory"
+format = " $icon  $mem_total_used_percents.eng(w:2) "
+format_alt = " $icon_swap $swap_used_percents.eng(w:2) "
+[block.theme_overrides]
+idle_bg = "#393f4a"
+idle_fg = "#abb2bf"
+separator = ""
+
+
+# [[block]]
+# block = "sound"
+# [[block.click]]
+# button = "left"
+# cmd = "pavucontrol"
+# [block.theme_overrides]
+
+
+[[block]]
+block = "time"
+interval = 5
+format = " $timestamp.datetime(f:'%a %d/%m %R') "
+[block.theme_overrides]
+idle_bg = "#98c379"
