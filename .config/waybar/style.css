@@ -1,0 +1,250 @@
+/* Keyframes */
+@keyframes blink-critical {
+	to {
+		background-color: @critical;
+	}
+}
+
+/* Colors (One Dark inspired) */
+@define-color black      #181a1f;
+@define-color red        #e86671;
+@define-color green      #98c379;
+@define-color yellow     #e5c07b;
+@define-color blue       #73b8f1;
+@define-color purple     #c678dd;
+@define-color aqua       #56b6c2;
+@define-color gray       #5c6370;
+@define-color brgray     #848b98;
+@define-color brred      #ef596f;
+@define-color brgreen    #98c379;
+@define-color bryellow   #e5c07b;
+@define-color brblue     #73b8f1;
+@define-color brpurple   #a626a4;
+@define-color braqua     #56b6c2;
+@define-color white      #abb2bf;
+@define-color bg2        #393f4a;
+@define-color bg3        #282c34;
+
+@define-color warning 	 @bryellow;
+@define-color critical	 @red;
+@define-color mode	 @purple;
+@define-color unfocused	 @bg3;
+@define-color focused	 @green;
+@define-color inactive	 @gray;
+@define-color sound	 @bg3;
+@define-color network	 @bg2;
+@define-color disk	 @black;
+@define-color cpu	 @bg2;
+@define-color temp	 @bg2;
+@define-color memory	 @bg3;
+@define-color layout	 @bryellow;
+@define-color battery	 @aqua;
+@define-color date	 @green;
+@define-color time	 @green;
+
+/* Reset all styles */
+* {
+	border: none;
+	border-radius: 0;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	box-shadow: none;
+	text-shadow: none;
+	-gtk-icon-shadow: none;
+}
+
+/* The whole bar */
+#waybar {
+	background: rgba(24, 26, 31, 0.75); /* #181a1fc0 */
+	color: @white;
+	font-family: FiraCode Mono SemBd, Siji;
+	font-size: 10pt;
+}
+
+/* Each module */
+#clock,
+#cpu,
+#memory,
+#mode,
+#temperature,
+#tray,
+#disk,
+#custom-power,
+#custom-menu,
+#custom-notification,
+
+/* Each critical module */
+#mode,
+#memory.critical,
+#cpu.critical,
+#temperature.critical,
+
+/* Each warning */
+#memory.warning,
+#cpu.warning,
+#temperature.warning,
+#custom-notification.warning
+
+/* Current sway mode (resize etc) */
+#mode {
+	color: @black;
+	background: @mode;
+}
+
+/* Custom power menu */
+#custom-power {
+	color: @black;
+	background-color: @focused;
+}
+
+/* Cutom notifications */
+#custom-notification {
+	color: @green;
+	background-color: @black;
+}
+
+/* Workspaces */
+#workspaces button {
+	padding-left: 4pt;
+	padding-right: 4pt;
+	color: @brgray;
+	background: @bg2;
+}
+
+/* Inactive (on unfocused output) */
+#workspaces button.visible {
+	color: @gray;
+}
+
+/* Active (on focused output) */
+#workspaces button.focused {
+	color: @green;
+}
+
+/* Contains an urgent window */
+#workspaces button.urgent {
+	color: @black;
+}
+
+/* Style when cursor is on the button */
+#workspaces button:hover {
+	color: @white;
+}
+
+#window {
+	margin-right: 35pt;
+	margin-left: 35pt;
+}
+
+#memory {
+	background: @memory;
+	color: @white;
+}
+
+#cpu {
+	background: @cpu;
+	color: @white;
+}
+
+#disk {
+	background: @disk;
+	color: @white;
+}
+
+#temperature {
+	background: @temp;
+	color: @white;
+}
+
+#tray {
+	background: @disk;
+	color: @black;
+}
+
+#clock {
+	background: @date;
+	color: @black;
+}
+
+menu {
+    border-radius: 10px;
+    background: @bg3;
+    color: @gray;
+}
+
+menuitem:hover {
+    background: transparent;
+    color: @green;
+}
+
+/* Arrow separators */
+#custom-arrow1 {
+	font-size: 13pt;
+	color: @time;
+	background: @cpu;
+	padding: 0;
+}
+
+#custom-arrow2 {
+	font-size: 13pt;
+	color: @cpu;
+	background: @memory;
+	padding: 0;
+}
+
+#custom-arrow3 {
+	font-size: 13pt;
+	color: @memory;
+	background: transparent;
+	padding: 0;
+}
+
+#custom-arrow4 {
+	font-size: 13pt;
+	color: transparent;
+	background: @temp;
+	padding: 0;
+}
+
+#custom-arrow5 {
+	font-size: 13pt;
+	color: @temp;
+	background: @cpu;
+	padding: 0;
+}
+
+#custom-arrow6 {
+	font-size: 13pt;
+	color: @cpu;
+	background: @memory;
+	padding: 0;
+}
+
+#custom-arrow7 {
+	font-size: 13pt;
+	color: @memory;
+	background: @network;
+	padding: 0;
+}
+
+#custom-arrow8 {
+	font-size: 13pt;
+	color: @network;
+	background: @sound;
+	padding: 0;
+}
+
+#custom-arrow9 {
+	font-size: 13pt;
+	color: @focused;
+	background: @bg2;
+	padding: 0;
+}
+
+#custom-arrow10 {
+	font-size: 13pt;
+	color: @bg2;
+	background: transparent;
+	padding: 0;
+}

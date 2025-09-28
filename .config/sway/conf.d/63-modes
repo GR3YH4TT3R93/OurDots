@@ -1,0 +1,155 @@
+### Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    # Ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+### OBS mode
+mode "obs-stream" {
+    # ===== STREAMING CONTROLS =====
+    # Start streaming
+    bindsym s exec obs-cmd streaming start
+
+    # Stop streaming
+    bindsym e exec obs-cmd streaming stop
+
+    # Toggle streaming
+    bindsym t exec obs-cmd streaming toggle
+    bindsym space exec obs-cmd streaming toggle
+
+    # Check streaming status
+    bindsym i exec obs-cmd streaming status
+
+    # ===== RECORDING CONTROLS =====
+    # Start recording
+    bindsym r exec obs-cmd recording start
+
+    # Stop recording
+    bindsym f exec obs-cmd recording stop
+
+    # Toggle recording
+    bindsym g exec obs-cmd recording toggle
+
+    # Pause recording
+    bindsym p exec obs-cmd recording pause
+
+    # Resume recording
+    bindsym l exec obs-cmd recording resume
+
+    # Toggle pause
+    bindsym k exec obs-cmd recording toggle-pause
+
+    # Create chapter
+    bindsym c exec obs-cmd recording create-chapter
+
+    # Create named chapter (with rofi for input)
+    bindsym n exec sh -c 'chapter=$(rofi -dmenu -p "Chapter name:") && obs-cmd recording create-chapter "$chapter"'
+
+    # Check recording status
+    bindsym h exec obs-cmd recording status
+
+    # Check if recording is active
+    bindsym j exec obs-cmd recording status-active
+
+    # ===== AUDIO CONTROLS =====
+    # Toggle mute for Mic/Aux
+    bindsym m exec obs-cmd audio toggle "Mic/Aux"
+
+    # Mute desktop audio
+    bindsym d exec obs-cmd audio mute "Desktop Audio"
+
+    # Unmute mic
+    bindsym u exec obs-cmd audio unmute "Mic/Aux"
+
+    # Check audio status
+    bindsym a exec obs-cmd audio status "Mic/Aux"
+
+    # ===== SCENE CONTROLS =====
+    # Get current scene
+    bindsym q exec obs-cmd scene current
+
+    # Switch to scene (with rofi for selection)
+    bindsym w exec sh -c 'scene=$(obs-cmd scene list | rofi -dmenu -p "Switch to scene:") && obs-cmd scene switch "$scene"'
+
+    # Switch scene collection (with rofi for selection)
+    bindsym x exec sh -c 'collection=$(obs-cmd scene-collection list | rofi -dmenu -p "Switch to collection:") && obs-cmd scene-collection switch "$collection"'
+
+    # Quick scene switching (customize with your actual scene names)
+    bindsym 1 exec obs-cmd scene switch "Main"
+    bindsym 2 exec obs-cmd scene switch "BRB"
+    bindsym 3 exec obs-cmd scene switch "Ending"
+    bindsym 4 exec obs-cmd scene switch "Starting Soon"
+
+    # ===== SCENE ITEM CONTROLS =====
+    # Enable scene item (with rofi for scene and source selection)
+    bindsym Shift+e exec sh -c 'scene=$(obs-cmd scene list | rofi -dmenu -p "Select scene:") && source=$(obs-cmd scene-item list "$scene" | rofi -dmenu -p "Select source:") && obs-cmd scene-item enable "$scene" "$source"'
+
+    # Disable scene item (with rofi for scene and source selection)
+    bindsym Shift+d exec sh -c 'scene=$(obs-cmd scene list | rofi -dmenu -p "Select scene:") && source=$(obs-cmd scene-item list "$scene" | rofi -dmenu -p "Select source:") && obs-cmd scene-item disable "$scene" "$source"'
+
+    # Toggle scene item (with rofi for scene and source selection)
+    bindsym Shift+t exec sh -c 'scene=$(obs-cmd scene list | rofi -dmenu -p "Select scene:") && source=$(obs-cmd scene-item list "$scene" | rofi -dmenu -p "Select source:") && obs-cmd scene-item toggle "$scene" "$source"'
+
+    # Quick toggle for common sources (customize with your actual scene and source names)
+    bindsym Shift+1 exec obs-cmd scene-item toggle "Main" "Webcam"
+    bindsym Shift+2 exec obs-cmd scene-item toggle "Main" "Overlay"
+    bindsym Shift+3 exec obs-cmd scene-item toggle "Main" "Chat"
+
+    # Get OBS Studio version and info (with notification)
+    bindsym v exec sh -c 'info=$(obs-cmd info) && notify-send "OBS Studio Info" "$info"'
+
+    # Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+# Enter OBS streaming mode
+bindsym $mod+Shift+o mode "obs-stream"
+
+### Swaynagmode confirmations:
+mode "nag" {
+  bindsym {
+    Ctrl+d    mode "default"
+
+    Ctrl+c    $nag_exit
+    q         $nag_exit
+    Escape    $nag_exit
+
+    Return    $nag_confirm
+    Shift+x   $nag_confirm
+
+    Tab       $nag_select prev
+    Shift+Tab $nag_select next
+
+    Left      $nag_select next
+    $left     $nag_select next
+    Right     $nag_select prev
+    $right    $nag_select prev
+
+    Up        $nag_select next
+    $up       $nag_select next
+    Down      $nag_select prev
+    $down     $nag_select prev
+  }
+}
+bindsym {
+    $mod+Shift+e $nag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit' -b 'Reload' -b 'Yes' 'swaymsg reload'
+}
+swaynag_command $nag -R
