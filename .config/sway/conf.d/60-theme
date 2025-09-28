@@ -1,0 +1,16 @@
+### Theme
+font pango:FiraCode Mono SemBd 12
+gaps inner 18
+gaps outer 0
+default_border pixel 1
+
+smart_borders off
+smart_gaps off
+
+# OneDark green theme borders
+client.focused          #98c379 #98c379 #282c34 #98c379 #98c379
+client.focused_inactive #5c6370 #5c6370 #abb2bf #5c6370 #5c6370
+client.unfocused        #3e4452 #3e4452 #5c6370 #3e4452 #3e4452
+client.urgent           #e06c75 #e06c75 #282c34 #e06c75 #e06c75
+client.placeholder      #282c34 #282c34 #abb2bf #282c34 #282c34
+client.background       #282c34

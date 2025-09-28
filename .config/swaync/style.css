@@ -1,0 +1,157 @@
+/* OneDark Green SwayNC Theme */
+/* OneDark Grey Background with Green Accents */
+
+@define-color black #181a1f;
+@define-color bg0 #282c3499;/* Dark grey with 90% opacity */
+@define-color bg1 #31353f;
+@define-color bg2 #393f4a;
+@define-color bg3 #3b3f4c;
+@define-color bg_d #21252b;
+@define-color bg_blue #73b8f1;
+@define-color bg_yellow #ebd09c;
+@define-color fg #abb2bf;
+@define-color purple #c678dd;
+@define-color green #98c379;
+@define-color orange #d19a66;
+@define-color blue #61afef;
+@define-color yellow #e5c07b;
+@define-color cyan #56b6c2;
+@define-color red #e86671;
+@define-color grey #5c6370;
+@define-color light_grey #848b98;
+@define-color dark_cyan #2b6f77;
+@define-color dark_red #993939;
+@define-color dark_yellow #93691d;
+@define-color dark_purple #8a3fa0;
+
+/* Main notification center - dark grey and transparent */
+.control-center {
+  background-color: #282c3416; /* #282c34 with 90% opacity */
+  border: 1px solid #98c379; /* Green border */
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+/* Individual notifications - dark grey and transparent */
+.notification {
+  background-color: @bg0; /* #3e4452 with 80% opacity */
+  border: 1px solid @green; /* Grey border by default */
+  border-radius: 6px;
+  margin: 6px;
+}
+
+/* Focused/hovered notifications - GREEN selection */
+.notification:hover,
+.notification.critical {
+  background-color: @bg0; /* #3e4452 with 95% opacity */
+  border-color: @red; /* Green when selected/hovered */
+}
+
+/* Text colors */
+.notification .notification-content {
+  color: @fg;
+}
+
+.notification .summary {
+  color: @green; /* Green for titles */
+  font-weight: bold;
+}
+
+.notification .app-name,
+.notification .time {
+  color: @bg0;
+}
+
+/* Control center list */
+.control-center-list {
+  background-color: transparent;
+}
+
+/* Buttons */
+.close-button {
+  background-color: @red;
+  color: @bg0;
+  border-radius: 50%;
+}
+
+.control-center .control-center-clear-all {
+  background-color: #98c379dd; /* Green clear button */
+  color: #282c34;
+  border: none;
+  border-radius: 4px;
+}
+
+.widget-mpris {
+  background-color: @bg0;
+  border: 1px solid @green;
+  border-radius: 6px;
+  margin: 6px;
+  padding: 8px;
+}
+
+.widget-mpris-player {
+  background-color: #3e4452cc;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 4px 0;
+}
+
+.widget-mpris-album-art {
+  margin-right: 12px;
+  border-radius: 4px;
+}
+
+.widget-mpris-title {
+  color: #98c379;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.widget-mpris-artist {
+  color: @fg;
+  font-size: 12px;
+}
+
+.widget-mpris-album {
+  color: #5c6370;
+  font-size: 11px;
+}
+
+/* Media control buttons */
+.widget-mpris button {
+  background-color: #98c37933;
+  color: #98c379;
+  border: 1px solid @green;
+  border-radius: 4px;
+  margin: 2px;
+}
+
+.widget-mpris button:hover {
+  background-color: @green;
+  color: #282c34;
+}
+
+/* Progress bar container */
+.widget-mpris-player > box > box > scale {
+  background-color: #3e4452;
+  border-radius: 2px;
+  min-height: 4px;
+}
+/* Progress bar */
+.widget-mpris-player > box > box > scale trough {
+  background-color: #5c6370;
+  border-radius: 2px;
+  min-height: 4px;
+}
+
+/* Progress bar background track */
+.widget-mpris-player > box > box > scale trough progress {
+  background-color: #98c379;
+  border-radius: 2px;
+  min-height: 4px;
+}
+
+/* Center the playback buttons */
+.widget-mpris-player > box > box > box {
+  justify-content: center;
+}
