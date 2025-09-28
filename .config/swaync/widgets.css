@@ -1,0 +1,21 @@
+@define-color grey #5c6370; @define-color green #98c379; @define-color bg0 #282c34; @define-color fg #abb2bf;
+/* widget wifi */
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(1)>button{background: @green; border: 2px solid @grey}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(1)>button:hover{background: @green; border: 2px solid @grey}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(1)>button>label{color: @bg0;}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(1)>button:hover>label{color: @bg0;}
+/* widget mute */
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(2)>button{background: @transparent; border: 2px solid @bg0}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(2)>button:hover{background: @transparent; border: 2px solid @grey}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(2)>button>label{color: @fg;}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(2)>button:hover>label{color: @grey;}
+/* widget bluetooth */
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(3)>button{background: @green; border: 2px solid @grey}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(3)>button:hover{background: @green; border: 2px solid @grey}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(3)>button>label{color: @bg0;}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(3)>button:hover>label{color: @bg0;}
+/* widget vpn */
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(4)>button{background: @transparent; border: 2px solid @bg0}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(4)>button:hover{background: @transparent; border: 2px solid @grey}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(4)>button>label{color: @fg;}
+.widget-buttons-grid>flowbox>flowboxchild:nth-child(4)>button:hover>label{color: @grey;}

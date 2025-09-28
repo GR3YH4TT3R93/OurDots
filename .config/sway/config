@@ -1,0 +1,11 @@
+# Gr3y's custom config for SwayFX
+#
+# Prerequisites for use:
+#
+# swayfx swayidle swaddle swaylock autotiling swaybg swaybar i3status-rs
+#
+# Read `man 5 sway` for a complete reference.
+
+include $HOME/.config/sway/conf.d/*
+
+include $HOME/.config/sway/.generated_settings/*
