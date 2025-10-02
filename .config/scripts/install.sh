@@ -475,13 +475,13 @@ git_config() {
   echo -e "${YELLOW}Time to set up your Git credentials${ENDCOLOR}."
 
   # Prompt the user for their Git username
-  read -rp "${GREEN}Enter your Git username${ENDCOLOR}: " username
+  read -rp "${GREEN}Enter your Git username${ENDCOLOR}: " username < /dev/tty
 
   # Prompt the user for their Git email
-  read -rp "${GREEN}Enter your Git email${ENDCOLOR}: " email
+  read -rp "${GREEN}Enter your Git email${ENDCOLOR}: " email < /dev/tty
 
   # Prompt the user for the name associated with the SSH key
-  read -rp "${GREEN}Enter a name you would like associated with the new SSH key for easy recognition on GitHub${ENDCOLOR}: " key_title
+  read -rp "${GREEN}Enter a name you would like associated with the new SSH key for easy recognition on GitHub${ENDCOLOR}: " key_title < /dev/tty
 
   # Git System Config
   read -rp "${GREEN}Would you like to set your Git configuration system-wide? (Yes/No)${ENDCOLOR}: " choice < /dev/tty
