@@ -654,7 +654,7 @@ install_oh_my_zsh() {
     export ZSH="$HOME/.config/oh-my-zsh"
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/GR3YH4TT3R93/ohmyzsh/master/tools/install.sh)"
     # Clean up excess files
-    rm ".shell.pre-oh-my-zsh"
+    rm ".zshrc.pre-oh-my-zsh"
 
     # Prompt the user to choose if they want to install Powerlevel10k
     read -rp "${GREEN}Would you like to install Powerlevel10k? (Yes/No)${ENDCOLOR}: " choice < /dev/tty
