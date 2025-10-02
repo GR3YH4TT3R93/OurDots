@@ -629,10 +629,10 @@ git_config() {
     fi
 }
 # Set up GitHub auth
-gh_auth() {
-  echo -e "${GREEN}Setting up GitHub authentication...${ENDCOLOR}"
-  gh auth login || error_exit "${YELLOW}Failed to set up GitHub auth${ENDCOLOR}."
-}
+#gh_auth() {
+#  echo -e "${GREEN}Setting up GitHub authentication...${ENDCOLOR}"
+#  gh auth login || error_exit "${YELLOW}Failed to set up GitHub auth${ENDCOLOR}."
+#}
 
 # Install Oh My Zsh
 install_oh_my_zsh() {
