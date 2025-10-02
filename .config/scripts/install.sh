@@ -758,6 +758,19 @@ install_oh_my_zsh() {
       sed -i '/magic-enter/d' ~/.zshrc
     fi
 
+    # Prompt the user to choose if they want to install Zsh-Interactive-Cd
+    read -rp "${GREEN}Would you like to install fzf-tab? (Yes/No)${ENDCOLOR}: " choice < /dev/tty
+
+    if [[ "$choice" == [Yy]* ]]; then
+      # Install Zsh-Interactive-Cd
+      echo -e "${GREEN}Installing fzf-tab${ENDCOLOR}."
+      sleep 2
+      git clone --depth=1 https://github.com/Aloxaf/fzf-tab "$ZSH_CUSTOM/plugins/fzf-tab" || error_exit "${YELLOW}Failed to install fzf-tab${ENDCOLOR}."
+    else
+      echo -e "${YELLOW}Skipping installation of fzf-tab${ENDCOLOR}."
+      sed -i '/fzf-tab/d' ~/.zshrc
+    fi
+
     # Prompt the user to choose if they want to keep the included .zsh_aliases file
     read -rp "${GREEN}Would you like to keep the included .zsh_aliases file? (Yes/No)${ENDCOLOR}: " choice < /dev/tty
     if [[ "$choice" == [Yy]* ]]; then
