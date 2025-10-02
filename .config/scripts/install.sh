@@ -1028,7 +1028,7 @@ setup_snapper() {
     ROOT_DEVICE=$(findmnt -n -o SOURCE / | sed 's/\[.*\]//')
     UUID=$(sudo blkid -s UUID -o value "$ROOT_DEVICE")
 
-    # Ensure fstab entries exist
+    # Ensure fstab entries exist FIRST
     if ! grep -q "@snapshots" /etc/fstab; then
         echo "Adding @snapshots to fstab..."
         echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
@@ -1039,12 +1039,12 @@ setup_snapper() {
         echo "UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
     fi
 
-    # Reload systemd daemon
+    # NOW reload systemd daemon AFTER fstab is updated
     echo "Reloading systemd daemon..."
     sudo systemctl daemon-reload
 
     # Delete existing snapshots if they exist
-    if snapper -c root list &>/dev/null; then
+    if snapper -c root list &>/dev/null 2>&1; then
         echo "Deleting existing snapshots..."
         for snap_num in $(snapper -c root list 2>/dev/null | awk 'NR>2 {print $1}' | grep -E '^[0-9]+$'); do
             sudo snapper -c root delete $snap_num 2>/dev/null
@@ -1080,13 +1080,20 @@ setup_snapper() {
 
     # Mount @snapshots subvolume
     echo "Mounting @snapshots..."
-    sudo mount /.snapshots
+    if ! sudo mount /.snapshots; then
+        echo "Error: Failed to mount /.snapshots"
+        echo "Checking fstab entry..."
+        grep "@snapshots" /etc/fstab
+        return 1
+    fi
 
     # Verify it's mounted as a subvolume
     if ! sudo btrfs subvolume show /.snapshots &>/dev/null; then
         echo "Error: /.snapshots is not mounted as a btrfs subvolume"
         return 1
     fi
+
+    echo "✓ /.snapshots mounted successfully"
 
     # Now create snapper config
     echo "Creating Snapper config..."
@@ -1109,7 +1116,7 @@ setup_snapper() {
         
         if [[ -x /etc/grub.d/41_snapshots-btrfs ]]; then
             echo "Regenerating grub-btrfs snapshot submenu..."
-            sudo /etc/grub.d/41_snapshots-btrfs
+            sudo /etc/grub.d/41_snapshots-btrfs > /dev/null 2>&1
         fi
     fi
 
@@ -1119,7 +1126,7 @@ setup_snapper() {
 
     # Update GRUB
     echo "Updating GRUB..."
-    sudo grub-mkconfig -o /boot/grub/grub.cfg
+    sudo grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
 
     # Verify setup
     echo
