@@ -267,7 +267,7 @@ install_mise() {
   # Get mise latest version
   MISE_VERSION=$(curl -s "https://api.github.com/repos/jdx/mise/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
   # Install mise to /usr/local/bin
-  curl -L "https://github.com/jdx/mise/releases/download/${MISE_VERSION}/mise-${MISE_VERSION}-linux-x64" \
+  curl -fsSL "https://github.com/jdx/mise/releases/download/${MISE_VERSION}/mise-${MISE_VERSION}-linux-x64" \
     | sudo tee /usr/local/bin/mise > /dev/null || error_exit "${YELLOW}Failed to download mise${ENDCOLOR}."
   sudo chmod +x /usr/local/bin/mise || error_exit "${YELLOW}Failed to install mise${ENDCOLOR}."
 
