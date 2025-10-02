@@ -386,15 +386,38 @@ install_neovim_extras() {
   # Install neovim gem for Ruby support
   # gem install neovim || error_exit "${YELLOW}Failed to install neovim gem${ENDCOLOR}."
   # Install luajit and luarocks for Lua support
-  if [ "$PKG_MANAGER" = "pacman" ]; then
-    if command -v yay >/dev/null 2>&1; then
-      yay -S --noconfirm luajit luarocks || error_exit "${YELLOW}Failed to install luajit and luarocks${ENDCOLOR}."
+# Check if luajit and luarocks need to be installed
+needs_luajit=false
+needs_luarocks=false
+
+if ! command -v luajit &> /dev/null; then
+    needs_luajit=true
+fi
+
+if ! command -v luarocks &> /dev/null; then
+    needs_luarocks=true
+fi
+
+# Only install if needed
+if [ "$needs_luajit" = true ] || [ "$needs_luarocks" = true ]; then
+    packages_to_install=""
+    [ "$needs_luajit" = true ] && packages_to_install="luajit"
+    [ "$needs_luarocks" = true ] && packages_to_install="$packages_to_install luarocks"
+    
+    echo "${GREEN}Installing $packages_to_install${ENDCOLOR}."
+    
+    if [ "$PKG_MANAGER" = "pacman" ]; then
+        if command -v yay >/dev/null 2>&1; then
+            yay -S --noconfirm $packages_to_install || error_exit "${YELLOW}Failed to install $packages_to_install${ENDCOLOR}."
+        else
+            sudo pacman -S --noconfirm $packages_to_install || error_exit "${YELLOW}Failed to install $packages_to_install${ENDCOLOR}."
+        fi
     else
-      sudo pacman -S --noconfirm luajit luarocks || error_exit "${YELLOW}Failed to install luajit and luarocks${ENDCOLOR}."
+        eval "$INSTALL_CMD $packages_to_install" || error_exit "${YELLOW}Failed to install $packages_to_install${ENDCOLOR}."
     fi
-  else
-    eval "$INSTALL_CMD luajit luarocks" || error_exit "${YELLOW}Failed to install luajit and luarocks${ENDCOLOR}."
-  fi
+else
+    echo "${GREEN}luajit and luarocks are already installed${ENDCOLOR}."
+fi
 
   # # Install neovim rock for Lua support
   # luarocks install --local --tree=$HOME/.luarocks neovim || error_exit "${YELLOW}Failed to install neovim rock${ENDCOLOR}."
