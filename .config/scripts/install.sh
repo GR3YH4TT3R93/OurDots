@@ -46,6 +46,7 @@ ARCH_PACKAGES=(
   nwg-look
   openssh
   playerctl
+  python-pynvim
   retroarch
   rofi
   ripgrep
@@ -381,9 +382,9 @@ install_neovim_nightly() {
 install_neovim_extras() {
   echo -e "${GREEN}Installing Neovim extras...${ENDCOLOR}"
   # Install pynvim for Python support
-  pip install --user pynvim || error_exit "${YELLOW}Failed to install pynvim${ENDCOLOR}."
+  #pip install --user pynvim || error_exit "${YELLOW}Failed to install pynvim${ENDCOLOR}."
   # Install neovim gem for Ruby support
-  gem install neovim || error_exit "${YELLOW}Failed to install neovim gem${ENDCOLOR}."
+  # gem install neovim || error_exit "${YELLOW}Failed to install neovim gem${ENDCOLOR}."
   # Install luajit and luarocks for Lua support
   if [ "$PKG_MANAGER" = "pacman" ]; then
     if command -v yay >/dev/null 2>&1; then
@@ -402,8 +403,8 @@ install_neovim_extras() {
   export PATH="$HOME/perl5/bin:$PATH"
   cpanm -n Neovim::Ext || error_exit "${YELLOW}Failed to install neovim perl module${ENDCOLOR}."
   # Install rubygems and neovim gem for Ruby support
-  gem install neovim || error_exit "${YELLOW}Failed to install neovim gem package${ENDCOLOR}."
-  gem update --system || error_exit "${YELLOW}Failed to update gem${ENDCOLOR}."
+  # gem install neovim || error_exit "${YELLOW}Failed to install neovim gem package${ENDCOLOR}."
+  # gem update --system || error_exit "${YELLOW}Failed to update gem${ENDCOLOR}."
   echo -e "${GREEN}Neovim extras installed successfully${ENDCOLOR}"
 }
 
