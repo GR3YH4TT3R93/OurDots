@@ -953,44 +953,47 @@ create_btrfs_subvolumes() {
   echo
 
   # Ask if user wants to automatically add to fstab
-  read -rp "Automatically add these entries to /etc/fstab? (y/N): " choice < /dev/tty
-  if [[ "$choice" == [Yy]* ]]; then
-    # Backup fstab
-    sudo cp /etc/fstab /etc/fstab.backup-$(date +%Y%m%d-%H%M%S)
-    echo "✓ Backed up /etc/fstab"
+# Ask if user wants to automatically add to fstab
+read -rp "Automatically add these entries to /etc/fstab? (y/N): " choice < /dev/tty
+if [[ "$choice" == [Yy]* ]]; then
+  # Backup fstab
+  sudo cp /etc/fstab /etc/fstab.backup-$(date +%Y%m%d-%H%M%S)
+  echo "✓ Backed up /etc/fstab"
 
-    # Add entries if they don't exist
-    if ! grep -q "@snapshots" /etc/fstab; then
-      echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0" >> /etc/fstab
-      echo "✓ Added @snapshots to fstab"
-    else
-      echo "⚠ @snapshots entry already in fstab"
-    fi
-
-    if ! grep -q "@games" /etc/fstab; then
-      echo "UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0" >> /etc/fstab
-      echo "✓ Added @games to fstab"
-    else
-      echo "⚠ @games entry already in fstab"
-    fi
-
-    echo
-    echo "Mounting new subvolumes..."
-    sudo mount /.snapshots
-    sudo mount /opt/games
-
-    if [[ $? -eq 0 ]]; then
-      echo "✓ Subvolumes mounted successfully"
-    else
-      echo "⚠ Warning: Some subvolumes may not have mounted correctly"
-    fi
+  # Add entries if they don't exist
+  if ! grep -q "@snapshots" /etc/fstab; then
+    echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
+    echo "✓ Added @snapshots to fstab"
   else
-    echo "Skipped automatic fstab modification"
-    echo "Please add the entries manually and then run:"
-    echo "  sudo mount /.snapshots"
-    echo "  sudo mount /opt/games"
+    echo "⚠ @snapshots entry already in fstab"
   fi
+
+  if ! grep -q "@games" /etc/fstab; then
+    echo "UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
+    echo "✓ Added @games to fstab"
+  else
+    echo "⚠ @games entry already in fstab"
+  fi
+
   echo
+  echo "Mounting new subvolumes..."
+  sudo mount /.snapshots
+  sudo mount /opt/games
+
+  if mountpoint -q /.snapshots && mountpoint -q /opt/games; then
+    echo "✓ Subvolumes mounted successfully"
+  else
+    echo "⚠ Warning: Some subvolumes may not have mounted correctly"
+    echo "Checking mount status:"
+    mountpoint /.snapshots && echo "  ✓ /.snapshots is mounted" || echo "  ✗ /.snapshots failed to mount"
+    mountpoint /opt/games && echo "  ✓ /opt/games is mounted" || echo "  ✗ /opt/games failed to mount"
+  fi
+else
+  echo "Skipped automatic fstab modification"
+  echo "Please add the entries manually and then run:"
+  echo "  sudo mount /.snapshots"
+  echo "  sudo mount /opt/games"
+fi
 
   # Unmount temporary mount
   echo "Cleaning up..."
