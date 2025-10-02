@@ -931,9 +931,17 @@ create_btrfs_subvolumes() {
   echo
 
   # Get UUID for fstab
-  UUID=$(blkid -s UUID -o value "$ROOT_DEVICE")
+  UUID=$(sudo blkid -s UUID -o value "$ROOT_DEVICE")
   echo "Partition UUID: $UUID"
   echo
+
+  # Check if UUID is set
+  if [[ -z "$UUID" ]]; then
+    echo "Error: Still could not retrieve UUID. Please check the device."
+    sudo umount "$TEMP_MOUNT"
+    sudo rmdir "$TEMP_MOUNT"
+    return 1
+  fi
 
   # Create mount points
   echo "Creating mount points..."
