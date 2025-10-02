@@ -1107,25 +1107,38 @@ setup_opt_games_permissions() {
 # Silence grub boot messages
 silence_grub() {
   echo "Silencing GRUB boot messages..."
-
   if [[ -f /etc/default/grub ]]; then
     # Backup grub config
     sudo cp /etc/default/grub /etc/default/grub.backup-$(date +%Y%m%d-%H%M%S)
     echo "✓ Backed up /etc/default/grub"
-
-    # Modify GRUB configuration
+    
+    # Modify GRUB timeout
     sudo sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
-
-    # Replace rd.systemd.show_status value with false, or add it if missing
-    sudo sed -i '/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
-      /rd\.systemd\.show_status/ s/rd\.systemd\.show_status=[^ "]*/rd.systemd.show_status=false/
-      /rd\.systemd\.show_status/! s/"$/ rd.systemd.show_status=false"/
-    }' /etc/default/grub
-
+    
+    # Function to prepend parameter if missing
+    prepend_param_if_missing() {
+      local param="$1"
+      if ! grep "^GRUB_CMDLINE_LINUX_DEFAULT=" /etc/default/grub | grep -q "$param"; then
+        sudo sed -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"\(.*\)\"/\"$param \1\"/" /etc/default/grub
+      fi
+    }
+    
+    # Prepend rd.systemd.show_status=false first (so it ends up last in the final order)
+    if grep "^GRUB_CMDLINE_LINUX_DEFAULT=" /etc/default/grub | grep -q "rd\.systemd\.show_status"; then
+      sudo sed -i 's/rd\.systemd\.show_status=[^ "]*/rd.systemd.show_status=false/' /etc/default/grub
+    else
+      prepend_param_if_missing "rd.systemd.show_status=false"
+    fi
+    
+    # Prepend splash
+    prepend_param_if_missing "splash"
+    
+    # Prepend quiet (will be first)
+    prepend_param_if_missing "quiet"
+    
     # Update GRUB
     sudo grub-mkconfig -o /boot/grub/grub.cfg
     echo "✓ Updated GRUB configuration"
-
     echo "✓ GRUB boot messages silenced"
   else
     echo "✗ Warning: /etc/default/grub not found"
