@@ -1209,9 +1209,6 @@ main() {
   # Set up Git configuration
   git_config
 
-  # Set up GitHub auth
-  gh_auth
-
   # Set up Oh My Zsh
   install_oh_my_zsh
 
