@@ -1206,7 +1206,7 @@ main() {
   # upgr# ade_packages
 
   # Install basic packages
-  install_package_list "$PACKAGES"
+  install_package_list "${PACKAGES[@]}"
 
   # Set up dotfiles
   setup_dotfiles
