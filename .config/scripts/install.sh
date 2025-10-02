@@ -495,79 +495,97 @@ install_gh() {
 
 # Git Credentials Setup
 git_config() {
-  echo -e "${YELLOW}Time to set up your Git credentials${ENDCOLOR}."
+ # Check if Git credentials are already configured
+git_username=$(git config --get user.name 2>/dev/null || git config --system --get user.name 2>/dev/null)
+git_email=$(git config --get user.email 2>/dev/null || git config --system --get user.email 2>/dev/null)
 
-  # Prompt the user for their Git username
-  read -rp "${GREEN}Enter your Git username${ENDCOLOR}: " username < /dev/tty
+if [ -n "$git_username" ] && [ -n "$git_email" ]; then
+    echo -e "${GREEN}Git credentials already configured${ENDCOLOR}."
+    echo -e "${GREEN}Username: $git_username${ENDCOLOR}."
+    echo -e "${GREEN}Email: $git_email${ENDCOLOR}."
+    read -rp "${YELLOW}Would you like to reconfigure? (Yes/No)${ENDCOLOR}: " reconfigure < /dev/tty
+    if [[ ! "$reconfigure" == [Yy]* ]]; then
+        echo -e "${GREEN}Keeping existing Git configuration${ENDCOLOR}."
+        # Still need key_title for SSH key operations later
+        read -rp "${GREEN}Enter the name of your existing SSH signing key (without .pub extension)${ENDCOLOR}: " key_title < /dev/tty
+    else
+        # Proceed with reconfiguration
+        setup_git_credentials=true
+    fi
+else
+    setup_git_credentials=true
+fi
 
-  # Prompt the user for their Git email
-  read -rp "${GREEN}Enter your Git email${ENDCOLOR}: " email < /dev/tty
-
-  # Prompt the user for the name associated with the SSH key
-  read -rp "${GREEN}Enter a name you would like associated with the new SSH key for easy recognition on GitHub${ENDCOLOR}: " key_title < /dev/tty
-
-  # Git System Config
-  read -rp "${GREEN}Would you like to set your Git configuration system-wide? (Yes/No)${ENDCOLOR}: " choice < /dev/tty
-  if [[ "$choice" == [Yy]* ]]; then
-    # Set the Git username and email system-wide
-    sudo git config --system user.name "$username"
-    sudo git config --system user.email "$email"
-    sudo git config --system gpg.format ssh
-    sudo git config --system user.signingkey ~/.ssh/"$key_title".pub
-    sudo git config --system gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
-    sudo git config --system diff.submodule log
-    sudo git config --system log.showSignature true
-    sudo git config --system submodule.recurse true
-    sudo git config --system commit.gpgsign true
-    sudo git config --system tag.gpgsign true
-    sudo git config --system push.autoSetupRemote true
-    sudo git config --system fetch.prune true
-    sudo git config --system core.editor nvim
-    sudo git config --system core.autocrlf input
-    sudo git config --system init.defaultBranch main
-    sudo git config --system color.status auto
-    sudo git config --system color.branch auto
-    sudo git config --system color.interactive auto
-    sudo git config --system color.diff auto
-    sudo git config --system status.short true
-    sudo git config --system alias.assume-unchanged 'update-index --assume-unchanged'
-    sudo git config --system alias.assume-changed 'update-index --no-assume-unchanged'
-    sudo gh auth setup-git
-    # Transfer gh helper config to system config
-    cat "$HOME/.gitconfig" >> "/usr/etc/gitconfig"
-    # Clean up unnecessary file
-    rm "$HOME/.gitconfig"
-    echo -e "${GREEN}Git credentials configured system-wide${ENDCOLOR}."
-
-  elif [[ "$choice" == [Nn]* ]]; then
-    # Set the Git username and email globally
-    git config --global user.name "$username"
-    git config --global user.email "$email"
-    git config --global gpg.format ssh
-    git config --global user.signingkey ~/.ssh/"$key_title".pub
-    git config --global gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
-    git config --global diff.submodule log
-    git config --global submodule.recurse true
-    git config --global log.showSignature true
-    git config --global commit.gpgsign true
-    git config --global tag.gpgsign true
-    git config --global push.autoSetupRemote true
-    git config --global fetch.prune true
-    git config --global core.editor nvim
-    git config --global core.autocrlf input
-    git config --global init.defaultBranch main
-    git config --global color.status auto
-    git config --global color.branch auto
-    git config --global color.interactive auto
-    git config --global color.diff auto
-    git config --global status.short true
-    git config --global alias.assume-unchanged 'update-index --assume-unchanged'
-    git config --global alias.assume-changed 'update-index --no-assume-unchanged'
-    gh auth setup-git
-    echo -e "${GREEN}Git credentials configured globally${ENDCOLOR}."
-  else
-    echo -e "${YELLOW}Skipping Git configuration${ENDCOLOR}."
-  fi
+if [ "$setup_git_credentials" = true ]; then
+    echo -e "${YELLOW}Time to set up your Git credentials${ENDCOLOR}."
+    # Prompt the user for their Git username
+    read -rp "${GREEN}Enter your Git username${ENDCOLOR}: " username < /dev/tty
+    # Prompt the user for their Git email
+    read -rp "${GREEN}Enter your Git email${ENDCOLOR}: " email < /dev/tty
+    # Prompt the user for the name associated with the SSH key
+    read -rp "${GREEN}Enter a name you would like associated with the new SSH key for easy recognition on GitHub${ENDCOLOR}: " key_title < /dev/tty
+    # Git System Config
+    read -rp "${GREEN}Would you like to set your Git configuration system-wide? (Yes/No)${ENDCOLOR}: " choice < /dev/tty
+    if [[ "$choice" == [Yy]* ]]; then
+        # Set the Git username and email system-wide
+        sudo git config --system user.name "$username"
+        sudo git config --system user.email "$email"
+        sudo git config --system gpg.format ssh
+        sudo git config --system user.signingkey ~/.ssh/"$key_title".pub
+        sudo git config --system gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
+        sudo git config --system diff.submodule log
+        sudo git config --system log.showSignature true
+        sudo git config --system submodule.recurse true
+        sudo git config --system commit.gpgsign true
+        sudo git config --system tag.gpgsign true
+        sudo git config --system push.autoSetupRemote true
+        sudo git config --system fetch.prune true
+        sudo git config --system core.editor nvim
+        sudo git config --system core.autocrlf input
+        sudo git config --system init.defaultBranch main
+        sudo git config --system color.status auto
+        sudo git config --system color.branch auto
+        sudo git config --system color.interactive auto
+        sudo git config --system color.diff auto
+        sudo git config --system status.short true
+        sudo git config --system alias.assume-unchanged 'update-index --assume-unchanged'
+        sudo git config --system alias.assume-changed 'update-index --no-assume-unchanged'
+        sudo gh auth setup-git
+        # Transfer gh helper config to system config
+        cat "$HOME/.gitconfig" >> "/usr/etc/gitconfig"
+        # Clean up unnecessary file
+        rm "$HOME/.gitconfig"
+        echo -e "${GREEN}Git credentials configured system-wide${ENDCOLOR}."
+    elif [[ "$choice" == [Nn]* ]]; then
+        # Set the Git username and email globally
+        git config --global user.name "$username"
+        git config --global user.email "$email"
+        git config --global gpg.format ssh
+        git config --global user.signingkey ~/.ssh/"$key_title".pub
+        git config --global gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
+        git config --global diff.submodule log
+        git config --global submodule.recurse true
+        git config --global log.showSignature true
+        git config --global commit.gpgsign true
+        git config --global tag.gpgsign true
+        git config --global push.autoSetupRemote true
+        git config --global fetch.prune true
+        git config --global core.editor nvim
+        git config --global core.autocrlf input
+        git config --global init.defaultBranch main
+        git config --global color.status auto
+        git config --global color.branch auto
+        git config --global color.interactive auto
+        git config --global color.diff auto
+        git config --global status.short true
+        git config --global alias.assume-unchanged 'update-index --assume-unchanged'
+        git config --global alias.assume-changed 'update-index --no-assume-unchanged'
+        gh auth setup-git
+        echo -e "${GREEN}Git credentials configured globally${ENDCOLOR}."
+    else
+        echo -e "${YELLOW}Skipping Git configuration${ENDCOLOR}."
+    fi
+fi
 
 
   read -rp "${GREEN}Would you like to add the SSH key to GitHub for Signature Verification? (Yes/No)${ENDCOLOR}: " choice < /dev/tty
