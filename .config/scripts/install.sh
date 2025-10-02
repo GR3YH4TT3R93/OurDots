@@ -1020,8 +1020,15 @@ fi
 }
 
 # Setup Snapper
+# Setup Snapper
 setup_snapper() {
     echo "=== Setting up Snapper ==="
+
+    # Check if snapper config already exists
+    if snapper list-configs | grep -q "root"; then
+        echo "Snapper config 'root' already exists. Removing it..."
+        sudo snapper -c root delete-config
+    fi
 
     # Force unmount ALL instances of /.snapshots
     echo "Unmounting all /.snapshots instances..."
@@ -1030,10 +1037,13 @@ setup_snapper() {
         sleep 1
     done
 
-    # Now remove the directory
-    if [[ -d /.snapshots ]]; then
+    # Check if /.snapshots is a subvolume before trying to delete it
+    if [[ -d /.snapshots ]] && sudo btrfs subvolume show /.snapshots &>/dev/null; then
+        echo "Removing existing /.snapshots subvolume..."
+        sudo btrfs subvolume delete /.snapshots
+    elif [[ -d /.snapshots ]]; then
         echo "Removing /.snapshots directory..."
-        sudo rmdir /.snapshots || sudo rm -rf /.snapshots
+        sudo rm -rf /.snapshots
     fi
 
     # Create snapper config for root (this will create /.snapshots as a subvolume)
@@ -1042,11 +1052,17 @@ setup_snapper() {
 
     # Delete the auto-created subvolume
     echo "Removing Snapper's auto-created subvolume..."
-    sudo btrfs subvolume delete /.snapshots
+    if sudo btrfs subvolume show /.snapshots &>/dev/null; then
+        sudo btrfs subvolume delete /.snapshots
+    fi
 
     # Recreate as a regular directory
     echo "Creating /.snapshots directory..."
-    sudo mkdir /.snapshots
+    sudo mkdir -p /.snapshots
+
+    # Reload systemd to recognize fstab changes
+    echo "Reloading systemd daemon..."
+    sudo systemctl daemon-reload
 
     # Mount the @snapshots subvolume (should be in fstab already)
     echo "Mounting @snapshots..."
@@ -1055,16 +1071,26 @@ setup_snapper() {
     # Set permissions
     sudo chmod 750 /.snapshots
 
-    # Configure grub-btrfs
-    echo "Configuring grub-btrfs..."
+    # Configure grub-btrfs for dracut
+    echo "Configuring grub-btrfs for dracut..."
     if [[ -f /etc/default/grub-btrfs/config ]]; then
-      # Uncomment and set the parameter if it exists
-      sudo sed -i 's/^#GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=.*/GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="rd.live.overlay.overlayfs=1"/' /etc/default/grub-btrfs/config
-      # If the line doesn't exist at all, add it
-      if ! grep -q "GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS" /etc/default/grub-btrfs/config; then
-        echo 'GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="rd.live.overlay.overlayfs=1"' | sudo tee -a /etc/default/grub-btrfs/config
+      # Backup the config file
+      sudo cp /etc/default/grub-btrfs/config /etc/default/grub-btrfs/config.backup-$(date +%Y%m%d-%H%M%S)
+      
+      # Check if the parameter line exists and modify it
+      if grep -q "^#*GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=" /etc/default/grub-btrfs/config; then
+        # Uncomment and set the parameter
+        sudo sed -i 's/^#*GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=.*/GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="rd.live.overlay.overlayfs=1"/' /etc/default/grub-btrfs/config
+      else
+        # Add the parameter if it doesn't exist
+        echo 'GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="rd.live.overlay.overlayfs=1"' | sudo tee -a /etc/default/grub-btrfs/config > /dev/null
       fi
-      echo "✓ Configured grub-btrfs kernel parameters"
+      echo "✓ Configured grub-btrfs kernel parameters for dracut"
+      
+      # Regenerate snapshot submenu with new parameters
+      echo "Regenerating grub-btrfs snapshot submenu..."
+      sudo /etc/grub.d/41_snapshots-btrfs
+      echo "✓ Regenerated snapshot submenu"
     else
       echo "⚠ Warning: /etc/default/grub-btrfs/config not found"
     fi
@@ -1087,9 +1113,8 @@ setup_snapper() {
         echo "✗ Warning: /.snapshots is not mounted"
     fi
 
-    echo "✓ Snapper configured"
+    echo "✓ Snapper configured with dracut overlay support"
 }
-
 # Setup /opt/games permissions
 setup_opt_games_permissions() {
   echo "Setting up /opt/games permissions..."
