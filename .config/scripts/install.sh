@@ -402,9 +402,9 @@ if [ "$needs_luajit" = true ] || [ "$needs_luarocks" = true ]; then
     packages_to_install=""
     [ "$needs_luajit" = true ] && packages_to_install="luajit"
     [ "$needs_luarocks" = true ] && packages_to_install="$packages_to_install luarocks"
-    
+
     echo "${GREEN}Installing $packages_to_install${ENDCOLOR}."
-    
+
     if [ "$PKG_MANAGER" = "pacman" ]; then
         if command -v yay >/dev/null 2>&1; then
             yay -S --noconfirm $packages_to_install || error_exit "${YELLOW}Failed to install $packages_to_install${ENDCOLOR}."
@@ -612,7 +612,7 @@ git_config() {
             eval "$(ssh-agent -s)"
             ssh-add ~/.ssh/"$key_title" || error_exit "${RED}Failed to add SSH key to agent${ENDCOLOR}"
         fi
-        
+
         # Check if we have the required scope before refreshing
         if ! gh auth status 2>&1 | grep -q "admin:ssh_signing_key"; then
             echo "${GREEN}Refreshing GH CLI permissions for SSH key management${ENDCOLOR}"
@@ -620,11 +620,11 @@ git_config() {
         else
             echo "${GREEN}Already have SSH signing key permissions${ENDCOLOR}"
         fi
-        
+
         echo "${GREEN}Adding SSH key to GitHub${ENDCOLOR}"
         # Add SSH key to GitHub using gh cli
         gh ssh-key add ~/.ssh/"$key_title".pub --title "$key_title" --type "signing" || error_exit "${RED}Failed to add SSH key to GitHub.${ENDCOLOR}"
-        
+
         # Create file containing SSH public key for verifying signers
         if [ ! -f ~/.ssh/allowed_signers ] || ! grep -q "$key_title" ~/.ssh/allowed_signers; then
             awk '{ print $3 " " $1 " " $2 }' ~/.ssh/"$key_title".pub >> ~/.ssh/allowed_signers
@@ -959,47 +959,47 @@ create_btrfs_subvolumes() {
   echo
 
   # Ask if user wants to automatically add to fstab
-# Ask if user wants to automatically add to fstab
-read -rp "Automatically add these entries to /etc/fstab? (y/N): " choice < /dev/tty
-if [[ "$choice" == [Yy]* ]]; then
-  # Backup fstab
-  sudo cp /etc/fstab /etc/fstab.backup-$(date +%Y%m%d-%H%M%S)
-  echo "✓ Backed up /etc/fstab"
+  # Ask if user wants to automatically add to fstab
+  read -rp "Automatically add these entries to /etc/fstab? (y/N): " choice < /dev/tty
+  if [[ "$choice" == [Yy]* ]]; then
+    # Backup fstab
+    sudo cp /etc/fstab /etc/fstab.backup-$(date +%Y%m%d-%H%M%S)
+    echo "✓ Backed up /etc/fstab"
 
-  # Add entries if they don't exist
-  if ! grep -q "@snapshots" /etc/fstab; then
-    echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
-    echo "✓ Added @snapshots to fstab"
+    # Add entries if they don't exist
+    if ! grep -q "@snapshots" /etc/fstab; then
+      echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
+      echo "✓ Added @snapshots to fstab"
+    else
+      echo "⚠ @snapshots entry already in fstab"
+    fi
+
+    if ! grep -q "@games" /etc/fstab; then
+      echo "UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
+      echo "✓ Added @games to fstab"
+    else
+      echo "⚠ @games entry already in fstab"
+    fi
+
+    echo
+    echo "Mounting new subvolumes..."
+    sudo mount /.snapshots
+    sudo mount /opt/games
+
+    if mountpoint -q /.snapshots && mountpoint -q /opt/games; then
+      echo "✓ Subvolumes mounted successfully"
+    else
+      echo "⚠ Warning: Some subvolumes may not have mounted correctly"
+      echo "Checking mount status:"
+      mountpoint /.snapshots && echo "  ✓ /.snapshots is mounted" || echo "  ✗ /.snapshots failed to mount"
+      mountpoint /opt/games && echo "  ✓ /opt/games is mounted" || echo "  ✗ /opt/games failed to mount"
+    fi
   else
-    echo "⚠ @snapshots entry already in fstab"
+    echo "Skipped automatic fstab modification"
+    echo "Please add the entries manually and then run:"
+    echo "  sudo mount /.snapshots"
+    echo "  sudo mount /opt/games"
   fi
-
-  if ! grep -q "@games" /etc/fstab; then
-    echo "UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
-    echo "✓ Added @games to fstab"
-  else
-    echo "⚠ @games entry already in fstab"
-  fi
-
-  echo
-  echo "Mounting new subvolumes..."
-  sudo mount /.snapshots
-  sudo mount /opt/games
-
-  if mountpoint -q /.snapshots && mountpoint -q /opt/games; then
-    echo "✓ Subvolumes mounted successfully"
-  else
-    echo "⚠ Warning: Some subvolumes may not have mounted correctly"
-    echo "Checking mount status:"
-    mountpoint /.snapshots && echo "  ✓ /.snapshots is mounted" || echo "  ✗ /.snapshots failed to mount"
-    mountpoint /opt/games && echo "  ✓ /opt/games is mounted" || echo "  ✗ /opt/games failed to mount"
-  fi
-else
-  echo "Skipped automatic fstab modification"
-  echo "Please add the entries manually and then run:"
-  echo "  sudo mount /.snapshots"
-  echo "  sudo mount /opt/games"
-fi
 
   # Unmount temporary mount
   echo "Cleaning up..."
@@ -1020,130 +1020,159 @@ fi
 }
 
 # Setup Snapper
-# Setup Snapper
 setup_snapper() {
-    echo "=== Setting up Snapper ==="
+  echo "=== Setting up Snapper (separate @snapshots subvolume layout) ==="
 
-    # Get UUID for fstab entries
-    ROOT_DEVICE=$(findmnt -n -o SOURCE / | sed 's/\[.*\]//')
-    UUID=$(sudo blkid -s UUID -o value "$ROOT_DEVICE")
+  # Get UUID for fstab entries
+  ROOT_DEVICE=$(findmnt -n -o SOURCE / | sed 's/\[.*\]//')
+  UUID=$(sudo blkid -s UUID -o value "$ROOT_DEVICE")
 
-    # Ensure fstab entries exist FIRST
-    if ! grep -q "@snapshots" /etc/fstab; then
-        echo "Adding @snapshots to fstab..."
-        echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
-    fi
+  # Ensure fstab entries exist FIRST
+  if ! grep -q "@snapshots" /etc/fstab; then
+    echo "Adding @snapshots to fstab..."
+    echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
+  fi
 
-    if ! grep -q "@games" /etc/fstab; then
-        echo "Adding @games to fstab..."
-        echo "UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
-    fi
+  if ! grep -q "@games" /etc/fstab; then
+    echo "Adding @games to fstab..."
+    echo "UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
+  fi
 
-    # NOW reload systemd daemon AFTER fstab is updated
-    echo "Reloading systemd daemon..."
-    sudo systemctl daemon-reload
+  # NOW reload systemd daemon AFTER fstab is updated
+  echo "Reloading systemd daemon..."
+  sudo systemctl daemon-reload
 
-    # Delete existing snapshots if they exist
-    if snapper -c root list &>/dev/null 2>&1; then
-        echo "Deleting existing snapshots..."
-        for snap_num in $(snapper -c root list 2>/dev/null | awk 'NR>2 {print $1}' | grep -E '^[0-9]+$'); do
-            sudo snapper -c root delete $snap_num 2>/dev/null
-        done
-    fi
+  # Delete existing snapshots if they exist
+  if snapper -c root list &>/dev/null 2>&1; then
+    echo "Deleting existing snapshots..."
+    for snap_num in $(snapper -c root list 2>/dev/null | awk 'NR>2 {print $1}' | grep -E '^[0-9]+$'); do
+      sudo snapper -c root delete $snap_num 2>/dev/null
+    done
+  fi
 
-    # Remove existing snapper config if it exists
-    if snapper list-configs 2>/dev/null | grep -q "root"; then
-        echo "Removing existing Snapper config..."
-        sudo snapper -c root delete-config 2>/dev/null || true
-    fi
+  # Remove existing snapper config if it exists
+  if snapper list-configs 2>/dev/null | grep -q "root"; then
+    echo "Removing existing Snapper config..."
+    sudo snapper -c root delete-config 2>/dev/null || true
+  fi
 
-    # Unmount /.snapshots if mounted
-    if mountpoint -q /.snapshots 2>/dev/null; then
-        echo "Unmounting /.snapshots..."
-        sudo umount /.snapshots
-    fi
+  # Unmount /.snapshots if mounted
+  if mountpoint -q /.snapshots 2>/dev/null; then
+    echo "Unmounting /.snapshots..."
+    sudo umount /.snapshots
+  fi
 
-    # Remove /.snapshots (whether it's a subvolume or directory)
-    if [[ -d /.snapshots ]]; then
-        if sudo btrfs subvolume show /.snapshots &>/dev/null; then
-            echo "Removing /.snapshots subvolume..."
-            sudo btrfs subvolume delete /.snapshots
-        else
-            echo "Removing /.snapshots directory..."
-            sudo rm -rf /.snapshots
-        fi
-    fi
-
-    # Create /.snapshots directory
-    echo "Creating /.snapshots directory..."
-    sudo mkdir -p /.snapshots
-
-    # Mount @snapshots subvolume
-    echo "Mounting @snapshots..."
-    if ! sudo mount /.snapshots; then
-        echo "Error: Failed to mount /.snapshots"
-        echo "Checking fstab entry..."
-        grep "@snapshots" /etc/fstab
-        return 1
-    fi
-
-    # Verify it's mounted as a subvolume
-    if ! sudo btrfs subvolume show /.snapshots &>/dev/null; then
-        echo "Error: /.snapshots is not mounted as a btrfs subvolume"
-        return 1
-    fi
-
-    echo "✓ /.snapshots mounted successfully"
-
-    # Now create snapper config
-    echo "Creating Snapper config..."
-    sudo snapper -c root create-config /
-
-    # Set permissions
-    sudo chmod 750 /.snapshots
-
-    # Configure grub-btrfs for dracut
-    echo "Configuring grub-btrfs for dracut..."
-    if [[ -f /etc/default/grub-btrfs/config ]]; then
-        sudo cp /etc/default/grub-btrfs/config /etc/default/grub-btrfs/config.backup-$(date +%Y%m%d-%H%M%S) 2>/dev/null
-        
-        if grep -q "^#*GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=" /etc/default/grub-btrfs/config; then
-            sudo sed -i 's/^#*GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=.*/GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="rd.live.overlay.overlayfs=1"/' /etc/default/grub-btrfs/config
-        else
-            echo 'GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="rd.live.overlay.overlayfs=1"' | sudo tee -a /etc/default/grub-btrfs/config > /dev/null
-        fi
-        echo "✓ Configured grub-btrfs kernel parameters"
-        
-        if [[ -x /etc/grub.d/41_snapshots-btrfs ]]; then
-            echo "Regenerating grub-btrfs snapshot submenu..."
-            sudo /etc/grub.d/41_snapshots-btrfs > /dev/null 2>&1
-        fi
-    fi
-
-    # Enable grub-btrfsd service
-    echo "Enabling grub-btrfsd service..."
-    sudo systemctl enable --now grub-btrfsd.service
-
-    # Update GRUB
-    echo "Updating GRUB..."
-    sudo grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
-
-    # Verify setup
-    echo
-    echo "=== Verification ==="
-    if mountpoint -q /.snapshots && sudo btrfs subvolume show /.snapshots &>/dev/null; then
-        echo "✓ /.snapshots is properly mounted as a btrfs subvolume"
+  # Remove /.snapshots (whether it's a subvolume or directory)
+  if [[ -d /.snapshots ]]; then
+    if sudo btrfs subvolume show /.snapshots &>/dev/null; then
+      echo "Removing nested /.snapshots subvolume (created by snapper)..."
+      sudo btrfs subvolume delete /.snapshots
     else
-        echo "✗ Warning: /.snapshots setup may have issues"
+      echo "Removing /.snapshots directory..."
+      sudo rm -rf /.snapshots
     fi
+  fi
 
-    if snapper -c root list &>/dev/null; then
-        echo "✓ Snapper is working correctly"
+  # Check if @snapshots subvolume exists at filesystem root, create if it doesn't
+  echo "Checking for @snapshots subvolume at filesystem root..."
+  if ! sudo btrfs subvolume list / | grep -q "path @snapshots$"; then
+    echo "Creating @snapshots subvolume at filesystem root..."
+    # Mount the root filesystem (subvolid=5) to temporary location
+    sudo mkdir -p /mnt/temp-root
+    sudo mount -o subvolid=5 "$ROOT_DEVICE" /mnt/temp-root
+    sudo btrfs subvolume create /mnt/temp-root/@snapshots
+    sudo umount /mnt/temp-root
+    sudo rmdir /mnt/temp-root
+  else
+    echo "✓ @snapshots subvolume already exists at filesystem root"
+  fi
+
+  # Create /.snapshots directory
+  echo "Creating /.snapshots directory..."
+  sudo mkdir -p /.snapshots
+
+  # Mount the separate @snapshots subvolume to /.snapshots
+  echo "Mounting separate @snapshots subvolume to /.snapshots..."
+  if ! sudo mount -o subvol=@snapshots,defaults,compress=zstd "$ROOT_DEVICE" /.snapshots; then
+    echo "Error: Failed to mount @snapshots subvolume to /.snapshots"
+    echo "Trying with UUID..."
+    if ! sudo mount -o subvol=@snapshots,defaults,compress=zstd "UUID=$UUID" /.snapshots; then
+      echo "Error: Alternative mount method also failed"
+      echo "Available subvolumes:"
+      sudo btrfs subvolume list / | head -10
+      return 1
+    fi
+  fi
+
+  # Verify it's mounted as the separate subvolume
+  if ! mountpoint -q /.snapshots; then
+    echo "Error: /.snapshots is not mounted"
+    return 1
+  fi
+
+  echo "✓ /.snapshots mounted successfully as separate @snapshots subvolume"
+
+  # Now create snapper config - this will use the already-mounted @snapshots
+  echo "Creating Snapper config..."
+  sudo snapper -c root create-config /
+
+  # Set permissions
+  sudo chmod 750 /.snapshots
+
+  # Configure grub-btrfs for dracut
+  echo "Configuring grub-btrfs for dracut..."
+  if [[ -f /etc/default/grub-btrfs/config ]]; then
+    sudo cp /etc/default/grub-btrfs/config /etc/default/grub-btrfs/config.backup-$(date +%Y%m%d-%H%M%S) 2>/dev/null
+
+    if grep -q "^#*GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=" /etc/default/grub-btrfs/config; then
+      sudo sed -i 's/^#*GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=.*/GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="rd.live.overlay.overlayfs=1"/' /etc/default/grub-btrfs/config
     else
-        echo "✗ Warning: Snapper may not be configured correctly"
+      echo 'GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="rd.live.overlay.overlayfs=1"' | sudo tee -a /etc/default/grub-btrfs/config > /dev/null
     fi
+    echo "✓ Configured grub-btrfs kernel parameters"
 
-    echo "✓ Snapper setup complete"
+    if [[ -x /etc/grub.d/41_snapshots-btrfs ]]; then
+      echo "Regenerating grub-btrfs snapshot submenu..."
+      sudo /etc/grub.d/41_snapshots-btrfs > /dev/null 2>&1
+    fi
+  fi
+
+  # Enable grub-btrfsd service
+  echo "Enabling grub-btrfsd service..."
+  sudo systemctl enable --now grub-btrfsd.service
+
+  # Update GRUB
+  echo "Updating GRUB..."
+  sudo grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
+
+  # Verify setup
+  echo
+  echo "=== Verification ==="
+  if mountpoint -q /.snapshots; then
+    echo "✓ /.snapshots is properly mounted"
+    MOUNT_SOURCE=$(findmnt -n -o SOURCE /.snapshots)
+    if echo "$MOUNT_SOURCE" | grep -q "subvol=@snapshots"; then
+      echo "✓ Using separate @snapshots subvolume (not nested in @)"
+    else
+      echo "✗ Warning: May not be using separate @snapshots subvolume"
+    fi
+  else
+    echo "✗ Warning: /.snapshots is not mounted"
+  fi
+
+  if snapper -c root list &>/dev/null; then
+    echo "✓ Snapper is working correctly"
+    echo "✓ Snapshots will be stored outside of @ subvolume for safe rollbacks"
+  else
+    echo "✗ Warning: Snapper may not be configured correctly"
+  fi
+
+  # Show filesystem layout
+  echo
+  echo "=== Current Filesystem Layout ==="
+  sudo btrfs subvolume list / | sort -k2
+
+  echo "✓ Snapper setup complete with separate @snapshots subvolume"
 }
 
 # Setup /opt/games permissions
@@ -1178,10 +1207,10 @@ silence_grub() {
     # Backup grub config
     sudo cp /etc/default/grub /etc/default/grub.backup-$(date +%Y%m%d-%H%M%S)
     echo "✓ Backed up /etc/default/grub"
-    
+
     # Modify GRUB timeout
     sudo sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
-    
+
     # Function to prepend parameter if missing
     prepend_param_if_missing() {
       local param="$1"
@@ -1189,20 +1218,20 @@ silence_grub() {
         sudo sed -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"\(.*\)\"/\"$param \1\"/" /etc/default/grub
       fi
     }
-    
+
     # Prepend rd.systemd.show_status=false first (so it ends up last in the final order)
     if grep "^GRUB_CMDLINE_LINUX_DEFAULT=" /etc/default/grub | grep -q "rd\.systemd\.show_status"; then
       sudo sed -i 's/rd\.systemd\.show_status=[^ "]*/rd.systemd.show_status=false/' /etc/default/grub
     else
       prepend_param_if_missing "rd.systemd.show_status=false"
     fi
-    
+
     # Prepend splash
     prepend_param_if_missing "splash"
-    
+
     # Prepend quiet (will be first)
     prepend_param_if_missing "quiet"
-    
+
     # Update GRUB
     sudo grub-mkconfig -o /boot/grub/grub.cfg
     echo "✓ Updated GRUB configuration"
