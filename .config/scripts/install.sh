@@ -589,44 +589,48 @@ git_config() {
         fi
     fi
 
-    # Set up GitHub auth if not already authenticated
-    if ! gh auth status &>/dev/null; then
-        gh auth login || error_exit "${RED}Failed to set up GitHub auth.${ENDCOLOR}"
-    else
-        echo "${GREEN}Already authenticated with GitHub CLI${ENDCOLOR}"
-    fi
+# Set up GitHub auth if not already authenticated
+if ! gh auth status &>/dev/null; then
+    gh auth login || error_exit "${RED}Failed to set up GitHub auth.${ENDCOLOR}"
+else
+    echo "${GREEN}Already authenticated with GitHub CLI${ENDCOLOR}"
+fi
 
-    # Check if SSH key already exists on GitHub (only if key_title is set)
-    if [ -n "$key_title" ] && gh ssh-key list 2>/dev/null | grep -q "$key_title"; then
-        echo "${GREEN}SSH key '$key_title' already exists on GitHub. Skipping SSH setup.${ENDCOLOR}"
+# Check if SSH key already exists on GitHub (only if key_title is set)
+if [ -n "$key_title" ] && gh ssh-key list 2>/dev/null | grep -q "$key_title"; then
+    echo "${GREEN}SSH key '$key_title' already exists on GitHub. Skipping SSH setup.${ENDCOLOR}"
+else
+    # Set Up SSH Key
+    if [ ! -f ~/.ssh/"$key_title" ]; then
+        # Generate an Ed25519 SSH key pair
+        echo "${GREEN}Generating SSH key${ENDCOLOR}"
+        ssh-keygen -f ~/.ssh/"$key_title" -t ed25519 -C "$email" || error_exit "${RED}Failed to generate SSH key${ENDCOLOR}"
+        # Start SSH agent and add key
+        eval "$(ssh-agent -s)"
+        ssh-add ~/.ssh/"$key_title" || error_exit "${RED}Failed to add SSH key to agent${ENDCOLOR}"
     else
-        # Set Up SSH Key
-        if [ ! -f ~/.ssh/"$key_title" ]; then
-            # Generate an Ed25519 SSH key pair
-            echo "${GREEN}Generating SSH key${ENDCOLOR}"
-            ssh-keygen -f ~/.ssh/"$key_title" -t ed25519 -C "$email" || error_exit "${RED}Failed to generate SSH key${ENDCOLOR}"
-            # Start SSH agent and add key
-            eval "$(ssh-agent -s)"
-            ssh-add ~/.ssh/"$key_title" || error_exit "${RED}Failed to add SSH key to agent${ENDCOLOR}"
-        else
-            echo -e "${YELLOW}SSH key already exists. Skipping SSH key generation. Adding SSH key to SSH-agent${ENDCOLOR}"
-            eval "$(ssh-agent -s)"
-            ssh-add ~/.ssh/"$key_title" || error_exit "${RED}Failed to add SSH key to agent${ENDCOLOR}"
-        fi
-        
-        # Give Permissions to GH CLI for adding SSH key to GitHub for Signing Commits
+        echo -e "${YELLOW}SSH key already exists. Skipping SSH key generation. Adding SSH key to SSH-agent${ENDCOLOR}"
+        eval "$(ssh-agent -s)"
+        ssh-add ~/.ssh/"$key_title" || error_exit "${RED}Failed to add SSH key to agent${ENDCOLOR}"
+    fi
+    
+    # Check if we have the required scope before refreshing
+    if ! gh auth status 2>&1 | grep -q "admin:ssh_signing_key"; then
         echo "${GREEN}Refreshing GH CLI permissions for SSH key management${ENDCOLOR}"
         gh auth refresh -h github.com -s admin:ssh_signing_key || error_exit "${RED}Failed to give GH CLI permissions to add SSH key to GitHub for Signature Verification.${ENDCOLOR}"
-        
-        echo "${GREEN}Adding SSH key to GitHub${ENDCOLOR}"
-        # Add SSH key to GitHub using gh cli
-        gh ssh-key add ~/.ssh/"$key_title".pub --title "$key_title" --type "signing" || error_exit "${RED}Failed to add SSH key to GitHub.${ENDCOLOR}"
-        
-        # Create file containing SSH public key for verifying signers
-        if [ ! -f ~/.ssh/allowed_signers ] || ! grep -q "$key_title" ~/.ssh/allowed_signers; then
-            awk '{ print $3 " " $1 " " $2 }' ~/.ssh/"$key_title".pub >> ~/.ssh/allowed_signers
-        fi
+    else
+        echo "${GREEN}Already have SSH signing key permissions${ENDCOLOR}"
     fi
+    
+    echo "${GREEN}Adding SSH key to GitHub${ENDCOLOR}"
+    # Add SSH key to GitHub using gh cli
+    gh ssh-key add ~/.ssh/"$key_title".pub --title "$key_title" --type "signing" || error_exit "${RED}Failed to add SSH key to GitHub.${ENDCOLOR}"
+    
+    # Create file containing SSH public key for verifying signers
+    if [ ! -f ~/.ssh/allowed_signers ] || ! grep -q "$key_title" ~/.ssh/allowed_signers; then
+        awk '{ print $3 " " $1 " " $2 }' ~/.ssh/"$key_title".pub >> ~/.ssh/allowed_signers
+    fi
+fi
 }
 # Set up GitHub auth
 #gh_auth() {
