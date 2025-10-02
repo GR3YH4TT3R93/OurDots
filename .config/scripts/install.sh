@@ -565,11 +565,23 @@ git_config() {
     fi
 
     # Give Permissions to GH CLI for adding SSH key to GitHub for Signing Commits
-    echo "${GREEN}Time to give GH CLI permissions to add SSH key to GitHub for Signature Verification${ENDCOLOR}."
-    gh auth login
-    gh auth refresh -h github.com -s admin:ssh_signing_key || error_exit "${YELLOW}Failed to give GH CLI permissions to add SSH key to GitHub for Signature Verification${ENDCOLOR}."
-    echo "${GREEN}Adding SSH key to GitHub${ENDCOLOR}."
+    echo "${GREEN}Checking GitHub CLI authentication status${ENDCOLOR}."
 
+    # Check if already logged in
+    if gh auth status &>/dev/null; then
+        echo "${GREEN}Already logged in to GitHub CLI${ENDCOLOR}."
+        # Check if we have the required scope
+        if ! gh auth status 2>&1 | grep -q "admin:ssh_signing_key"; then
+            echo "${GREEN}Refreshing auth with SSH signing key permissions${ENDCOLOR}."
+            gh auth refresh -h github.com -s admin:ssh_signing_key || error_exit "${YELLOW}Failed to refresh GH CLI permissions for SSH signing key${ENDCOLOR}."
+        fi
+    else
+        echo "${GREEN}Setting up GitHub CLI authentication${ENDCOLOR}."
+        gh auth login || error_exit "${YELLOW}Failed to authenticate with GitHub CLI${ENDCOLOR}."
+        gh auth refresh -h github.com -s admin:ssh_signing_key || error_exit "${YELLOW}Failed to give GH CLI permissions to add SSH key to GitHub for Signature Verification${ENDCOLOR}."
+    fi
+
+    echo "${GREEN}Adding SSH key to GitHub${ENDCOLOR}."
     # Add SSH key to GitHub using gh cli
     gh ssh-key add ~/.ssh/"$key_title".pub --title "$key_title" --type "signing" || error_exit "${YELLOW}Failed to add SSH key to GitHub${ENDCOLOR}."
 
