@@ -566,6 +566,7 @@ git_config() {
 
     # Give Permissions to GH CLI for adding SSH key to GitHub for Signing Commits
     echo "${GREEN}Time to give GH CLI permissions to add SSH key to GitHub for Signature Verification${ENDCOLOR}."
+    gh auth login
     gh auth refresh -h github.com -s admin:ssh_signing_key || error_exit "${YELLOW}Failed to give GH CLI permissions to add SSH key to GitHub for Signature Verification${ENDCOLOR}."
     echo "${GREEN}Adding SSH key to GitHub${ENDCOLOR}."
 
