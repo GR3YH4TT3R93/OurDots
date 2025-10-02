@@ -12,7 +12,7 @@
 #                            Custom variables                                 #
 #                                                                             #
 ###############################################################################
-ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.config/oh-my-zsh/custom}
 FILE_PATH="$HOME/GitHub"
 RED=$'\e[31m'
 GREEN=$'\e[32m'
