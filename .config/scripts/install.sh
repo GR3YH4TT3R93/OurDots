@@ -210,33 +210,32 @@ install_package_list() {
     local packages
 
     if [ $# -gt 0 ]; then
-      packages="$@"
+      # Properly receive the array
+      packages=("$@")
       echo -e "${GREEN}Installing provided package list...${ENDCOLOR}"
     else
-      read -rp "Enter path to package list file: " package_file
+      read -rp "Enter path to package list file: " package_file < /dev/tty
       if [ -f "$package_file" ]; then
-        packages=$(cat "$package_file")
+        # Read into array
+        mapfile -t packages < "$package_file"
         echo -e "${GREEN}Reading packages from $package_file...${ENDCOLOR}"
       else
         error_exit "File not found: $package_file"
       fi
     fi
 
-    # Convert packages to array for proper handling
-    local package_array=($packages)
-
-    if [ ${#package_array[@]} -gt 0 ]; then
-      echo -e "${GREEN}Installing ${#package_array[@]} packages: ${package_array[*]}${ENDCOLOR}"
+    if [ ${#packages[@]} -gt 0 ]; then
+      echo -e "${GREEN}Installing ${#packages[@]} packages: ${packages[*]}${ENDCOLOR}"
 
       # Install all packages in a single command
-      if eval "$INSTALL_CMD" "${package_array[@]}"; then
+      if eval "$INSTALL_CMD" "${packages[@]}"; then
         echo -e "${GREEN}Successfully installed all packages${ENDCOLOR}"
       else
         echo -e "${YELLOW}Some packages may have failed to install. Trying individual installation...${ENDCOLOR}"
 
         # Fallback: install individually if batch install fails
         local failed_packages=()
-        for package in "${package_array[@]}"; do
+        for package in "${packages[@]}"; do
           echo -e "${GREEN}Installing $package...${ENDCOLOR}"
           if ! eval "$INSTALL_CMD" "$package"; then
             echo -e "${YELLOW}Warning: Failed to install $package${ENDCOLOR}"
