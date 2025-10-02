@@ -593,11 +593,11 @@ git_email=$(git config --get user.email 2>/dev/null || git config --system --get
 
 if [ -n "$git_username" ] && [ -n "$git_email" ]; then
     echo -e "${GREEN}Git credentials already configured (Username: $git_username, Email: $git_email)${ENDCOLOR}"
-    read -rp "${YELLOW}Would you like to reconfigure? (Yes/No)${ENDCOLOR}: " reconfigure
+    read -rp "${YELLOW}Would you like to reconfigure? (Yes/No)${ENDCOLOR}: " reconfigure < /dev/tty
     if [[ ! "$reconfigure" == [Yy]* ]]; then
         echo -e "${GREEN}Keeping existing Git configuration${ENDCOLOR}"
         # Still need to get key_title for later operations
-        read -rp "${GREEN}Enter your existing SSH key name (without .pub extension)${ENDCOLOR}: " key_title
+        read -rp "${GREEN}Enter your existing SSH key name (without .pub extension)${ENDCOLOR}: " key_title < /dev/tty
         username="$git_username"
         email="$git_email"
         skip_git_config=true
@@ -616,13 +616,13 @@ if [ "$skip_git_config" != true ]; then
     # Set Up Git Credentials
     echo -e "${YELLOW}Time to set up your Git credentials!${ENDCOLOR}"
     # Prompt the user for their Git username
-    read -rp "${GREEN}Enter your Git username${ENDCOLOR}: " username
+    read -rp "${GREEN}Enter your Git username${ENDCOLOR}: " username < /dev/tty
     # Prompt the user for their Git email
-    read -rp "${GREEN}Enter your Git email${ENDCOLOR}: " email
+    read -rp "${GREEN}Enter your Git email${ENDCOLOR}: " email < /dev/tty
     # Prompt the user for the name associated with the SSH key
-    read -rp "${GREEN}Enter a name you would like associated with the SSH key for easy recognition on GitHub (Title)${ENDCOLOR}: " key_title
+    read -rp "${GREEN}Enter a name you would like associated with the SSH key for easy recognition on GitHub (Title)${ENDCOLOR}: " key_title < /dev/tty
     # Prompt the user to choose between global and system-wide configuration
-    read -rp "${GREEN}Would you like to set your Git configuration system-wide? (Yes/No)${ENDCOLOR}: " choice
+    read -rp "${GREEN}Would you like to set your Git configuration system-wide? (Yes/No)${ENDCOLOR}: " choice < /dev/tty
 fi
 
 # Check if SSH key already exists on GitHub
