@@ -1202,6 +1202,9 @@ silence_grub() {
     # Modify GRUB timeout
     sudo sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
 
+    # Modify GRUB timeout menu
+    sudo sed -i 's/GRUB_TIMEOUT_STYLE=menu/GRUB_TIMEOUT_STYLE=hidden/' /etc/default/grub
+
     # Function to prepend parameter if missing
     prepend_param_if_missing() {
       local param="$1"
