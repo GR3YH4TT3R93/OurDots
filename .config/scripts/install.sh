@@ -87,7 +87,7 @@ ARCH_PACKAGES=(
   proton-ge-custom-bin
   snap-pac-grub
   swaddle
-  wlroots-git
+  # wlroots-git
   sway-git
   swaysettings-git
   sway-screenshot
@@ -155,19 +155,19 @@ detect_system() {
     UPDATE_CMD="sudo apt update -y"
     UPGRADE_CMD="sudo apt upgrade -y"
     INSTALL_CMD="sudo apt install -y"
-    PACKAGES="${DEBIAN_PACKAGES[@]}"
+    PACKAGES=("${DEBIAN_PACKAGES[@]}")
   elif command -v dnf >/dev/null 2>&1; then
     PKG_MANAGER="dnf"
     UPDATE_CMD="sudo dnf check-update -y || true"
     UPGRADE_CMD="sudo dnf upgrade -y"
     INSTALL_CMD="sudo dnf install -y"
-    PACKAGES="${FEDORA_PACKAGES[@]}"
+    PACKAGES=("${FEDORA_PACKAGES[@]}")
   elif command -v pacman >/dev/null 2>&1; then
     PKG_MANAGER="pacman"
     UPDATE_CMD="sudo pacman -Sy"
     UPGRADE_CMD="sudo pacman -Su --noconfirm"
     INSTALL_CMD="yay -S --noconfirm"
-    PACKAGES="${ARCH_PACKAGES[@]}"
+    PACKAGES=("${ARCH_PACKAGES[@]}")
   else
     error_exit "No supported package manager found"
   fi
@@ -204,6 +204,25 @@ setup_dotfiles() {
   fi
 }
 
+# Helper function to check if a package is installed
+package_installed() {
+  local package="$1"
+  case "$PKG_MANAGER" in
+    apt)
+      dpkg -l "$package" 2>/dev/null | grep -q "^ii"
+      ;;
+    dnf)
+      rpm -q "$package" >/dev/null 2>&1
+      ;;
+    pacman)
+      yay -Qi "$package" >/dev/null 2>&1
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 # Package installation function
 install_package_list() {
   # Prompt the user to choose if they want to install recommended packages
@@ -229,25 +248,30 @@ install_package_list() {
     if [ ${#packages[@]} -gt 0 ]; then
       echo -e "${GREEN}Installing ${#packages[@]} packages: ${packages[*]}${ENDCOLOR}"
 
-      # Install all packages in a single command
+      # Try batch install first
       if eval "$INSTALL_CMD" "${packages[@]}"; then
         echo -e "${GREEN}Successfully installed all packages${ENDCOLOR}"
       else
-        echo -e "${YELLOW}Some packages may have failed to install. Trying individual installation...${ENDCOLOR}"
+        echo -e "${YELLOW}Batch install failed. Identifying failed packages...${ENDCOLOR}"
 
-        # Fallback: install individually if batch install fails
+        # Identify which packages failed
         local failed_packages=()
         for package in "${packages[@]}"; do
-          echo -e "${GREEN}Installing $package...${ENDCOLOR}"
-          if ! eval "$INSTALL_CMD" "$package"; then
-            echo -e "${YELLOW}Warning: Failed to install $package${ENDCOLOR}"
+          if ! package_installed "$package"; then
             failed_packages+=("$package")
           fi
         done
 
-        # Report any failures
+        # Only retry the failed ones
         if [ ${#failed_packages[@]} -gt 0 ]; then
-          echo -e "${YELLOW}Failed to install: ${failed_packages[*]}${ENDCOLOR}"
+          echo -e "${YELLOW}Retrying ${#failed_packages[@]} failed packages: ${failed_packages[*]}${ENDCOLOR}"
+
+          for package in "${failed_packages[@]}"; do
+            echo -e "${GREEN}Installing $package...${ENDCOLOR}"
+            if ! eval "$INSTALL_CMD" "$package"; then
+              echo -e "${RED}Failed to install $package${ENDCOLOR}"
+            fi
+          done
         fi
       fi
     else
@@ -1295,8 +1319,8 @@ main() {
   #                 Update and upgrade system packages                        #
   #                                                                           #
   #############################################################################
-  # update_repos
-  # upgr# ade_packages
+  update_repos
+  upgrade_packages
 
   # Install basic packages
   install_package_list "${PACKAGES[@]}"
