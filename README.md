@@ -2,9 +2,19 @@
 
 # Our Dotfiles
 
-## Update Repositories, Install Git
+A 🔋 included [SwayFX](https://github.com/WillPower3309/swayfx) config primarily written for Arch (with your contribution it can support your distro too!)
 
-    sudo apt update && sudo apt install git
+A few of OurDotfiles features:
+
+- SwayFX (Sway with Eye Candy!)
+- Neovim (with 🔋 included IDE-like config)
+- Rofi
+- Wezterm (with included oh-my-zsh + Powerline10k theme)
+- Yazi (Set as your default file manager with the help of [xdg-desktop-portal-termfilechooser](https://github.com/GermainZ/xdg-desktop-portal-termfilechooser)!)
+- i3status-rs
+- tmux
+- btrfs snapshotting (If you're using btrfs, it will automagically set up [Snapper](https://wiki.archlinux.org/title/Snapper) as well as [grub-btrfs](https://github.com/Antynea/grub-btrfs) and [snap-pac](https://github.com/wesbarnett/snap-pac) for easier recovery from borked updates!)
+- shared games folder (on seperate subvolume for improved space savings while gaming and utilizing snapshots!)
 
 ## Clone Dotfiles As Bare Repo
 
