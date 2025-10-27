@@ -31,7 +31,11 @@ save="$3"
 path="$4"
 out="$5"
 cmd="/usr/bin/yazi"
+
+export EDITOR="${EDITOR:-/usr/bin/nvim}"
 # "wezterm start --always-new-process" if you use wezterm
+export TERMCMD="wezterm start --always-new-process"
+
 if [ "$save" = "1" ]; then
   TITLE="Save File:"
 elif [ "$directory" = "1" ]; then
