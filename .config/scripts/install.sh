@@ -87,9 +87,11 @@ ARCH_PACKAGES=(
   proton-ge-custom-bin
   snap-pac-grub
   swaddle
+  wlroots-git
+  sway-git
   swaysettings-git
   sway-screenshot
-  swayfx
+  swayfx-git
   typioca
   upd72020x-fw
   waypaper
