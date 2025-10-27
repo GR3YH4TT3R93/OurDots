@@ -403,7 +403,7 @@ if [ "$needs_luajit" = true ] || [ "$needs_luarocks" = true ]; then
     [ "$needs_luajit" = true ] && packages_to_install="luajit"
     [ "$needs_luarocks" = true ] && packages_to_install="$packages_to_install luarocks"
 
-    echo "${GREEN}Installing $packages_to_install${ENDCOLOR}."
+    echo -e "${GREEN}Installing $packages_to_install${ENDCOLOR}."
 
     if [ "$PKG_MANAGER" = "pacman" ]; then
         if command -v yay >/dev/null 2>&1; then
@@ -415,7 +415,7 @@ if [ "$needs_luajit" = true ] || [ "$needs_luarocks" = true ]; then
         eval "$INSTALL_CMD $packages_to_install" || error_exit "${YELLOW}Failed to install $packages_to_install${ENDCOLOR}."
     fi
 else
-    echo "${GREEN}luajit and luarocks are already installed${ENDCOLOR}."
+    echo -e "${GREEN}luajit and luarocks are already installed${ENDCOLOR}."
 fi
 
   # # Install neovim rock for Lua support
@@ -592,17 +592,17 @@ git_config() {
     if ! gh auth status 2>&1 | grep -q "Logged in to github.com"; then
         gh auth login || error_exit "${RED}Failed to set up GitHub auth.${ENDCOLOR}"
     else
-        echo "${GREEN}Already authenticated with GitHub CLI${ENDCOLOR}"
+        echo -e "${GREEN}Already authenticated with GitHub CLI${ENDCOLOR}"
     fi
 
     # Check if SSH key already exists on GitHub (only if key_title is set)
     if [ -n "$key_title" ] && gh ssh-key list 2>/dev/null | grep -q "$key_title"; then
-        echo "${GREEN}SSH key '$key_title' already exists on GitHub. Skipping SSH setup.${ENDCOLOR}"
+        echo -e "${GREEN}SSH key '$key_title' already exists on GitHub. Skipping SSH setup.${ENDCOLOR}"
     else
         # Set Up SSH Key
         if [ ! -f ~/.ssh/"$key_title" ]; then
             # Generate an Ed25519 SSH key pair
-            echo "${GREEN}Generating SSH key${ENDCOLOR}"
+            echo -e "${GREEN}Generating SSH key${ENDCOLOR}"
             ssh-keygen -f ~/.ssh/"$key_title" -t ed25519 -C "$email" || error_exit "${RED}Failed to generate SSH key${ENDCOLOR}"
             # Start SSH agent and add key
             eval "$(ssh-agent -s)"
@@ -615,13 +615,13 @@ git_config() {
 
         # Check if we have the required scope before refreshing
         if ! gh auth status 2>&1 | grep -q "admin:ssh_signing_key"; then
-            echo "${GREEN}Refreshing GH CLI permissions for SSH key management${ENDCOLOR}"
+            echo -e "${GREEN}Refreshing GH CLI permissions for SSH key management${ENDCOLOR}"
             gh auth refresh -h github.com -s admin:ssh_signing_key || error_exit "${RED}Failed to give GH CLI permissions to add SSH key to GitHub for Signature Verification.${ENDCOLOR}"
         else
-            echo "${GREEN}Already have SSH signing key permissions${ENDCOLOR}"
+            echo -e "${GREEN}Already have SSH signing key permissions${ENDCOLOR}"
         fi
 
-        echo "${GREEN}Adding SSH key to GitHub${ENDCOLOR}"
+        echo -e "${GREEN}Adding SSH key to GitHub${ENDCOLOR}"
         # Add SSH key to GitHub using gh cli
         gh ssh-key add ~/.ssh/"$key_title".pub --title "$key_title" --type "signing" || error_exit "${RED}Failed to add SSH key to GitHub.${ENDCOLOR}"
 
@@ -649,7 +649,7 @@ install_oh_my_zsh() {
   read -rp "${GREEN}Would you like to install Oh-My-Zsh? (Yes/No)${ENDCOLOR}: " choice < /dev/tty
   if [[ "$choice" == [Yy]* ]]; then
     # Install Oh My Zsh
-    echo "${GREEN}Installing Oh-My-Zsh${ENDCOLOR}."
+    echo -e "${GREEN}Installing Oh-My-Zsh${ENDCOLOR}."
     sleep 2
     export ZSH="$HOME/.config/oh-my-zsh"
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/GR3YH4TT3R93/ohmyzsh/master/tools/install.sh)"
@@ -844,256 +844,256 @@ install_firacode_nerd_font() {
 
 # Set up btrfs config
 create_btrfs_subvolumes() {
-  echo "=== Btrfs Subvolume Creator ==="
+  echo -e "${GREEN}=== Btrfs Subvolume Creator ===${ENDCOLOR}"
   echo
 
   # Find the Btrfs root partition
-  echo "Detecting Btrfs root partition..."
+  echo -e "${GREEN}Detecting Btrfs root partition...${ENDCOLOR}"
   ROOT_DEVICE=$(findmnt -n -o SOURCE / | sed 's/\[.*\]//')
 
   if [[ -z "$ROOT_DEVICE" ]]; then
-    echo "Error: Could not detect root device"
+    echo -e "${RED}Error: Could not detect root device${ENDCOLOR}"
     return 1
   fi
 
-  echo "Root device: $ROOT_DEVICE"
+  echo -e "${GREEN}Root device: $ROOT_DEVICE"
 
   # Verify it's a Btrfs filesystem
   FS_TYPE=$(findmnt -n -o FSTYPE /)
   if [[ "$FS_TYPE" != "btrfs" ]]; then
-    echo "Error: Root filesystem is not Btrfs (detected: $FS_TYPE)"
+    echo -e "${RED}Error: Root filesystem is not Btrfs (detected: $FS_TYPE)${ENDCOLOR}"
     return 1
   fi
 
-  echo "Confirmed Btrfs filesystem"
+  echo -e "${GREEN}Confirmed Btrfs filesystem${ENDCOLOR}"
   echo
 
   # Create temporary mount point
   TEMP_MOUNT="/mnt/btrfs-root-temp"
-  echo "Creating temporary mount point at $TEMP_MOUNT..."
+  echo -e "${GREEN}Creating temporary mount point at $TEMP_MOUNT...${ENDCOLOR}"
   sudo mkdir -p "$TEMP_MOUNT"
 
   # Mount top-level subvolume
-  echo "Mounting top-level Btrfs subvolume..."
+  echo -e "${GREEN}Mounting top-level Btrfs subvolume...${ENDCOLOR}"
   sudo mount -o subvolid=5 "$ROOT_DEVICE" "$TEMP_MOUNT"
 
   if [[ $? -ne 0 ]]; then
-    echo "Error: Failed to mount top-level subvolume"
+    echo -e "${RED}Error: Failed to mount top-level subvolume${ENDCOLOR}"
     sudo rmdir "$TEMP_MOUNT"
     return 1
   fi
 
-  echo "Successfully mounted at $TEMP_MOUNT"
+  echo -e "${GREEN}Successfully mounted at $TEMP_MOUNT${ENDCOLOR}"
   echo
 
   # List existing subvolumes
-  echo "Current subvolumes:"
+  echo -e "${GREEN}Current subvolumes:${ENDCOLOR}"
   sudo btrfs subvolume list / | grep -E "path @"
   echo
 
   # Create @snapshots subvolume
   if [[ -d "$TEMP_MOUNT/@snapshots" ]]; then
-    echo "Warning: @snapshots subvolume already exists, skipping..."
+    echo -e "${RED}Warning: @snapshots subvolume already exists, skipping...${ENDCOLOR}"
   else
-    echo "Creating @snapshots subvolume..."
+    echo -e "${GREEN}Creating @snapshots subvolume...${ENDCOLOR}"
     sudo btrfs subvolume create "$TEMP_MOUNT/@snapshots"
     if [[ $? -eq 0 ]]; then
-      echo "✓ Created @snapshots subvolume"
+      echo -e "${GREEN}✓ Created @snapshots subvolume${ENDCOLOR}"
     else
-      echo "✗ Failed to create @snapshots subvolume"
+      echo -e "${RED}✗ Failed to create @snapshots subvolume${ENDCOLOR}"
     fi
   fi
   echo
 
   # Create @games subvolume
   if [[ -d "$TEMP_MOUNT/@games" ]]; then
-    echo "Warning: @games subvolume already exists, skipping..."
+    echo -e "${YELLOW}Warning: @games subvolume already exists, skipping...${ENDCOLOR}"
   else
-    echo "Creating @games subvolume..."
+    echo -e "${GREEN}Creating @games subvolume...${ENDCOLOR}"
     sudo btrfs subvolume create "$TEMP_MOUNT/@games"
     if [[ $? -eq 0 ]]; then
-      echo "✓ Created @games subvolume"
+      echo -e "${GREEN}✓ Created @games subvolume${ENDCOLOR}"
     else
-      echo "✗ Failed to create @games subvolume"
+      echo -e "${RED}✗ Failed to create @games subvolume${ENDCOLOR}"
     fi
   fi
   echo
 
   # Move existing data if needed
   if [[ -d "/opt/games" ]] && [[ -n "$(ls -A /opt/games 2>/dev/null)" ]]; then
-    echo "Found existing data in /opt/games"
-    read -rp "Copy existing data to new @games subvolume? (y/N): " choice < /dev/tty
+    echo -e "${GREEN}Found existing data in /opt/games${ENDCOLOR}"
+    read -rp "${GREEN}Copy existing data to new @games subvolume? (y/N): ${ENDCOLOR}" choice < /dev/tty
     if [[ "$choice" == [Yy]* ]]; then
-      echo "Copying data..."
+      echo -e "${GREEN}Copying data...${ENDCOLOR}"
       sudo cp -a /opt/games/* "$TEMP_MOUNT/@games/"
-      echo "✓ Data copied"
+      echo -e "${GREEN}✓ Data copied${ENDCOLOR}"
     fi
   fi
   echo
 
   # Get UUID for fstab
   UUID=$(sudo blkid -s UUID -o value "$ROOT_DEVICE")
-  echo "Partition UUID: $UUID"
+  echo -e "${GREEN}Partition UUID: $UUID${ENDCOLOR}"
   echo
 
   # Check if UUID is set
   if [[ -z "$UUID" ]]; then
-    echo "Error: Still could not retrieve UUID. Please check the device."
+    echo -e "${RED}Error: Still could not retrieve UUID. Please check the device.${ENDCOLOR}"
     sudo umount "$TEMP_MOUNT"
     sudo rmdir "$TEMP_MOUNT"
     return 1
   fi
 
   # Create mount points
-  echo "Creating mount points..."
+  echo -e "${GREEN}Creating mount points...${ENDCOLOR}"
   sudo mkdir -p /.snapshots
   sudo mkdir -p /opt/games
-  echo "✓ Mount points created"
+  echo -e "${GREEN}✓ Mount points created${ENDCOLOR}"
   echo
 
   # Generate fstab entries
-  echo "=== Add these lines to /etc/fstab ==="
+  echo "${GREEN}=== Add these lines to /etc/fstab ===${ENDCOLOR}"
   echo
-  echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0"
-  echo "UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0"
+  echo -e "${GREEN}UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0${ENDCOLOR}"
+  echo -e "${GREEN}UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0${ENDCOLOR}"
   echo
 
   # Ask if user wants to automatically add to fstab
   # Ask if user wants to automatically add to fstab
-  read -rp "Automatically add these entries to /etc/fstab? (y/N): " choice < /dev/tty
+  read -rp "${GREEN}Automatically add these entries to /etc/fstab? (y/N): ${ENDCOLOR}" choice < /dev/tty
   if [[ "$choice" == [Yy]* ]]; then
     # Backup fstab
     sudo cp /etc/fstab /etc/fstab.backup-$(date +%Y%m%d-%H%M%S)
-    echo "✓ Backed up /etc/fstab"
+    echo -e "${GREEN}✓ Backed up /etc/fstab${ENDCOLOR}"
 
     # Add entries if they don't exist
     if ! grep -q "@snapshots" /etc/fstab; then
       echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
-      echo "✓ Added @snapshots to fstab"
+      echo -e "${GREEN}✓ Added @snapshots to fstab${ENDCOLOR}"
     else
-      echo "⚠ @snapshots entry already in fstab"
+      echo -e "${YELLOW}⚠ @snapshots entry already in fstab${ENDCOLOR}"
     fi
 
     if ! grep -q "@games" /etc/fstab; then
       echo "UUID=$UUID  /opt/games   btrfs  subvol=@games,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab > /dev/null
-      echo "✓ Added @games to fstab"
+      echo -e "${GREEN}✓ Added @games to fstab${ENDCOLOR}"
     else
-      echo "⚠ @games entry already in fstab"
+      echo -e "${YELLOW}⚠ @games entry already in fstab${ENDCOLOR}"
     fi
 
     echo
-    echo "Mounting new subvolumes..."
+    echo -e "${GREEN}Mounting new subvolumes...${ENDCOLOR}"
     sudo mount /.snapshots
     sudo mount /opt/games
 
     if mountpoint -q /.snapshots && mountpoint -q /opt/games; then
-      echo "✓ Subvolumes mounted successfully"
+      echo -e "${GREEN}✓ Subvolumes mounted successfully${ENDCOLOR}"
     else
-      echo "⚠ Warning: Some subvolumes may not have mounted correctly"
-      echo "Checking mount status:"
-      mountpoint /.snapshots && echo "  ✓ /.snapshots is mounted" || echo "  ✗ /.snapshots failed to mount"
-      mountpoint /opt/games && echo "  ✓ /opt/games is mounted" || echo "  ✗ /opt/games failed to mount"
+      echo -e "${YELLOW}⚠ Warning: Some subvolumes may not have mounted correctly${ENDCOLOR}"
+      echo -e "${GREEN}Checking mount status:${ENDCOLOR}"
+      mountpoint /.snapshots && echo -e "  ${GREEN}✓ /.snapshots is mounted${ENDCOLOR}" || echo -e "  ${RED}✗ /.snapshots failed to mount${ENDCOLOR}"
+      mountpoint /opt/games && echo -e "  ${GREEN}✓ /opt/games is mounted${ENDCOLOR}" || echo -e "  ${RED}✗ /opt/games failed to mount${ENDCOLOR}"
     fi
   else
-    echo "Skipped automatic fstab modification"
-    echo "Please add the entries manually and then run:"
-    echo "  sudo mount /.snapshots"
-    echo "  sudo mount /opt/games"
+    echo -e "${YELLOW}Skipped automatic fstab modification${ENDCOLOR}"
+    echo -e "${YELLOW}Please add the entries manually and then run:${ENDCOLOR}"
+    echo -e "${YELLOW}  sudo mount /.snapshots${ENDCOLOR}"
+    echo -e "${YELLOW}  sudo mount /opt/games${ENDCOLOR}"
   fi
 
   # Unmount temporary mount
-  echo "Cleaning up..."
+  echo -e "Cleaning up...${ENDCOLOR}"
   sudo umount "$TEMP_MOUNT"
   sudo rmdir "$TEMP_MOUNT"
-  echo "✓ Cleanup complete"
+  echo -e "${GREEN}✓ Cleanup complete${ENDCOLOR}"
   echo
 
   # Verify
-  echo "=== Verification ==="
-  echo "Current subvolumes:"
+  echo "${GREEN}=== Verification ===${ENDCOLOR}"
+  echo -e "${GREEN}Current subvolumes:${ENDCOLOR}"
   sudo btrfs subvolume list / | grep -E "path @"
   echo
-  echo "Mounted subvolumes:"
+  echo -e "${GREEN}Mounted subvolumes:${ENDCOLOR}"
   sudo mount | grep btrfs
   echo
-  echo "=== Setup Complete! ==="
+  echo "${GREEN}=== Setup Complete! ===${ENDCOLOR}"
 }
 
 # Setup Snapper
 setup_snapper() {
-  echo "=== Setting up Snapper (Arch Wiki method) ==="
+  echo "${GREEN}=== Setting up Snapper (Arch Wiki method) ===${ENDCOLOR}"
 
   # Get root device
   ROOT_DEVICE=$(findmnt -n -o SOURCE / | sed 's/\[.*\]//')
   UUID=$(sudo blkid -s UUID -o value "$ROOT_DEVICE")
 
-  echo "1. Cleaning up existing Snapper configuration..."
+  echo -e "${GREEN}1. Cleaning up existing Snapper configuration...${ENDCOLOR}"
   # Remove existing snapper config if it exists
   if snapper list-configs 2>/dev/null | grep -q "root"; then
-    echo "   - Removing existing root config..."
+    echo -e "   ${YELLOW} - Removing existing root config...${ENDCOLOR}"
     sudo snapper -c root delete-config 2>/dev/null || true
   fi
 
-  echo "2. Ensuring /.snapshots is not mounted and doesn't exist as folder..."
+  echo -e "${GREEN}2. Ensuring /.snapshots is not mounted and doesn't exist as folder...${ENDCOLOR}"
   # Unmount /.snapshots if mounted
   if mountpoint -q /.snapshots; then
     sudo umount /.snapshots
   fi
-  
+
   # Remove /.snapshots directory
   sudo rm -rf /.snapshots
 
-  echo "3. Creating snapper config for /..."
+  echo -e "${GREEN}3. Creating snapper config for /...${ENDCOLOR}"
   # This will create a nested .snapshots subvolume inside @
-  sudo snapper -c root create-config / 2>/dev/null || echo "   - Config already exists (this is OK)"
+  sudo snapper -c root create-config / 2>/dev/null || echo -e "   ${YELLOW} - Config already exists (this is OK)${ENDCOLOR}"
 
-  echo "4. Deleting any nested .snapshots subvolume that snapper created..."
+  echo -e "${GREEN}4. Deleting any nested .snapshots subvolume that snapper created...${ENDCOLOR}"
   # Delete the nested subvolume that snapper created (if it exists)
   if [[ -d /.snapshots ]] && sudo btrfs subvolume show /.snapshots &>/dev/null; then
     sudo btrfs subvolume delete /.snapshots
-    echo "   - Removed nested subvolume"
+    echo -e "   ${GREEN} - Removed nested subvolume${ENDCOLOR}"
   else
-    echo "   - No nested subvolume to delete"
+    echo -e "   ${YELLOW} - No nested subvolume to delete${ENDCOLOR}"
   fi
 
-  echo "5. Recreating /.snapshots as directory..."
+  echo -e "${GREEN}5. Recreating /.snapshots as directory...${ENDCOLOR}"
   # Recreate as regular directory
   sudo mkdir /.snapshots
 
-  echo "6. Reloading systemd for fstab changes..."
+  echo -e "${GREEN}6. Reloading systemd for fstab changes...${ENDCOLOR}"
   sudo systemctl daemon-reload
 
-  echo "7. Mounting separate @snapshots subvolume to /.snapshots..."
+  echo -e "7. Mounting separate @snapshots subvolume to /.snapshots...${ENDCOLOR}"
   # Mount the separate @snapshots subvolume
   sudo mount -o subvol=@snapshots,defaults,compress=zstd "$ROOT_DEVICE" /.snapshots
 
-  echo "8. Adding fstab entry for persistence..."
+  echo -e "${GREEN}8. Adding fstab entry for persistence...${ENDCOLOR}"
   # Add to fstab for persistence
   if ! grep -q "@snapshots" /etc/fstab; then
     echo "UUID=$UUID  /.snapshots  btrfs  subvol=@snapshots,defaults,compress=zstd  0  0" | sudo tee -a /etc/fstab
-    echo "   - Added to fstab"
+    echo -e "   ${GREEN} - Added to fstab${ENDCOLOR}"
   else
-    echo "   - Fstab entry already exists"
+    echo -e "   ${YELLOW} - Fstab entry already exists${ENDCOLOR}"
   fi
 
-  echo "9. Setting permissions..."
+  echo -e "${GREEN}9. Setting permissions...${ENDCOLOR}"
   sudo chmod 750 /.snapshots
 
-  echo "10. Enabling snapper services..."
+  echo -e "${GREEN}10. Enabling snapper services...${ENDCOLOR}"
   sudo systemctl enable --now snapper-timeline.timer
   sudo systemctl enable --now snapper-cleanup.timer
 
   # GRUB-BTRFS SETUP
-  echo "11. Setting up grub-btrfs integration..."
+  echo -e "${GREEN}11. Setting up grub-btrfs integration...${ENDCOLOR}"
   # Check if grub-btrfs is installed by looking for the package or files
   if pacman -Q grub-btrfs 2>/dev/null || [[ -f /usr/bin/grub-btrfsd || -f /usr/bin/grub-btrfs || -f /etc/grub.d/41_snapshots-btrfs ]]; then
-    echo "   - grub-btrfs is installed, configuring..."
-    
+    echo -e "   ${GREEN} - grub-btrfs is installed, configuring...${ENDCOLOR}"
+
     # Configure grub-btrfs for dracut if config file exists
     if [[ -f /etc/default/grub-btrfs/config ]]; then
-      echo "   - Configuring grub-btrfs kernel parameters..."
+      echo -e "   ${GREEN} - Configuring grub-btrfs kernel parameters...${ENDCOLOR}"
       sudo cp /etc/default/grub-btrfs/config /etc/default/grub-btrfs/config.backup-$(date +%Y%m%d-%H%M%S) 2>/dev/null || true
-      
+
       if grep -q "^#*GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=" /etc/default/grub-btrfs/config; then
         sudo sed -i 's/^#*GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=.*/GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="rd.live.overlay.overlayfs=1"/' /etc/default/grub-btrfs/config
       else
@@ -1103,101 +1103,101 @@ setup_snapper() {
 
     # Regenerate grub-btrfs snapshot submenu if the script exists
     if [[ -x /etc/grub.d/41_snapshots-btrfs ]]; then
-      echo "   - Regenerating grub-btrfs snapshot submenu..."
-      sudo /etc/grub.d/41_snapshots-btrfs > /dev/null 2>&1 || echo "   ⚠ grub-btrfs submenu generation had issues"
+      echo -e "   ${GREEN} - Regenerating grub-btrfs snapshot submenu...${ENDCOLOR}"
+      sudo /etc/grub.d/41_snapshots-btrfs > /dev/null 2>&1 || echo -e "   ${YELLOW}⚠ grub-btrfs submenu generation had issues${ENDCOLOR}"
     fi
 
     # Enable grub-btrfsd service if it exists
     if systemctl list-unit-files | grep -q grub-btrfsd.service; then
-      echo "   - Enabling grub-btrfsd service..."
+      echo -e "   ${GREEN} - Enabling grub-btrfsd service...${ENDCOLOR}"
       sudo systemctl enable --now grub-btrfsd.service
     else
-      echo "   ⚠ grub-btrfsd.service not found"
+      echo -e "   ${YELLOW}⚠ grub-btrfsd.service not found${ENDCOLOR}"
     fi
   else
-    echo "   ⚠ grub-btrfs is not installed, skipping grub integration"
-    echo "   To install: sudo pacman -S grub-btrfs"
+    echo -e "   ${YELLOW}⚠ grub-btrfs is not installed, skipping grub integration${ENDCOLOR}"
+    echo -e "   ${YELLOW}To install: sudo pacman -S grub-btrfs${ENDCOLOR}"
   fi
 
   # UPDATE GRUB
-  echo "12. Updating GRUB configuration..."
+  echo -e "12. Updating GRUB configuration...${ENDCOLOR}"
   if command -v grub-mkconfig >/dev/null 2>&1; then
-    sudo grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1 && echo "   ✓ GRUB updated successfully" || echo "   ⚠ GRUB update had issues"
+    sudo grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1 && echo -e "   ${GREEN}✓ GRUB updated successfully${ENDCOLOR}" || echo -e "   ${YELLOW}⚠ GRUB update had issues${ENDCOLOR}"
   else
-    echo "   ⚠ grub-mkconfig not found"
+    echo -e "   ${YELLOW}⚠ grub-mkconfig not found${ENDCOLOR}"
   fi
 
   # VERIFICATION
   echo
-  echo "=== Verification ==="
+  echo "${GREEN}=== Verification ===${ENDCOLOR}"
   if mountpoint -q /.snapshots; then
-    echo "✓ /.snapshots is properly mounted"
+    echo -e "${GREEN}✓ /.snapshots is properly mounted${ENDCOLOR}"
     MOUNT_SOURCE=$(findmnt -n -o SOURCE /.snapshots)
     if echo "$MOUNT_SOURCE" | grep -q "subvol=@snapshots"; then
-      echo "✓ Using separate @snapshots subvolume (not nested in @)"
+      echo -e "${GREEN}✓ Using separate @snapshots subvolume (not nested in @)${ENDCOLOR}"
     fi
   else
-    echo "✗ /.snapshots is not mounted"
+    echo -e "${RED}✗ /.snapshots is not mounted${ENDCOLOR}"
   fi
 
   if snapper -c root list-configs 2>/dev/null | grep -q "root"; then
-    echo "✓ Snapper config created successfully"
+    echo -e "${GREEN}✓ Snapper config created successfully${ENDCOLOR}"
   else
-    echo "✗ Snapper config missing"
+    echo -e "${RED}✗ Snapper config missing${ENDCOLOR}"
   fi
 
   if systemctl is-active snapper-timeline.timer >/dev/null 2>&1; then
-    echo "✓ Snapper timeline timer is active"
+    echo -e "${GREEN}✓ Snapper timeline timer is active${ENDCOLOR}"
   else
-    echo "✗ Snapper timeline timer is not active"
+    echo -e "${RED}✗ Snapper timeline timer is not active${ENDCOLOR}"
   fi
 
   # Check grub-btrfs properly (without trying to run the daemon as user)
   if pacman -Q grub-btrfs 2>/dev/null && systemctl is-active grub-btrfsd.service >/dev/null 2>&1; then
-    echo "✓ grub-btrfsd service is active"
+    echo -e "${GREEN}✓ grub-btrfsd service is active${ENDCOLOR}"
   elif pacman -Q grub-btrfs 2>/dev/null; then
-    echo "⚠ grub-btrfs installed but service not active"
+    echo -e "${YELLOW}⚠ grub-btrfs installed but service not active${ENDCOLOR}"
   else
-    echo "⚠ grub-btrfs not installed"
+    echo -e "${YELLOW}⚠ grub-btrfs not installed${ENDCOLOR}"
   fi
 
   echo
-  echo "✓ Snapper setup complete - following Arch Wiki layout"
-  echo "✓ Snapshots are stored in separate @snapshots subvolume (not nested in @)"
+  echo -e "${GREEN}✓ Snapper setup complete - following Arch Wiki layout${ENDCOLOR}"
+  echo -e "${GREEN}✓ Snapshots are stored in separate @snapshots subvolume (not nested in @)${ENDCOLOR}"
 }
 
 # Setup /opt/games permissions
 setup_opt_games_permissions() {
-  echo "Setting up /opt/games permissions..."
+  echo -e "Setting up /opt/games permissions...${ENDCOLOR}"
 
   # Create a 'games' group if it doesn't exist
   if ! getent group games >/dev/null; then
     sudo groupadd games
-    echo "✓ Created 'games' group"
+    echo -e "${GREEN}✓ Created 'games' group${ENDCOLOR}"
   else
-    echo "⚠ 'games' group already exists"
+    echo -e "${YELLOW}⚠ 'games' group already exists${ENDCOLOR}"
   fi
 
   # Add the current user to the 'games' group
   sudo usermod -aG games "$USER"
   # Change ownership of /opt/games to root:games
   sudo chown root:games /opt/games
-  echo "✓ Changed ownership of /opt/games to root:games"
+  echo -e "${GREEN}✓ Changed ownership of /opt/games to root:games${ENDCOLOR}"
 
   # Set permissions to 2775 (rwxrwsr-x)
   sudo chmod 2775 /opt/games
-  echo "✓ Set permissions of /opt/games to 2775"
+  echo -e "${GREEN}✓ Set permissions of /opt/games to 2775${ENDCOLOR}"
 
-  echo "✓ /opt/games permissions setup complete"
+  echo -e "${GREEN}✓ /opt/games permissions setup complete${ENDCOLOR}"
 }
 
 # Silence grub boot messages
 silence_grub() {
-  echo "Silencing GRUB boot messages..."
+  echo -e "${GREEN}Silencing GRUB boot messages...${ENDCOLOR}"
   if [[ -f /etc/default/grub ]]; then
     # Backup grub config
     sudo cp /etc/default/grub /etc/default/grub.backup-$(date +%Y%m%d-%H%M%S)
-    echo "✓ Backed up /etc/default/grub"
+    echo -e "${GREEN}✓ Backed up /etc/default/grub${ENDCOLOR}"
 
     # Modify GRUB timeout
     sudo sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
@@ -1228,16 +1228,16 @@ silence_grub() {
 
     # Update GRUB
     sudo grub-mkconfig -o /boot/grub/grub.cfg
-    echo "✓ Updated GRUB configuration"
-    echo "✓ GRUB boot messages silenced"
+    echo -e "${GREEN}✓ Updated GRUB configuration${ENDCOLOR}"
+    echo -e "${GREEN}✓ GRUB boot messages silenced${ENDCOLOR}"
   else
-    echo "✗ Warning: /etc/default/grub not found"
+    echo -e "${RED}✗ Warning: /etc/default/grub not found${ENDCOLOR}"
   fi
 }
 
 # Set up wayland sddm
 setup_sddm_wayland() {
-  echo "Setting up SDDM Wayland configuration..."
+  echo -e "${GREEN}Setting up SDDM Wayland configuration...${ENDCOLOR}"
 
   # Create the directory if it doesn't exist
   sudo mkdir -p /etc/sddm.conf.d
@@ -1252,7 +1252,7 @@ GreeterEnvironment=QT_WAYLAND_SHELL_INTEGRATION=layer-shell
 CompositorCommand=kwin_wayland --drm --no-lockscreen --no-global-shortcuts --locale1
 EOF
 
-  echo "SDDM Wayland configuration written to /etc/sddm.conf.d/10-wayland.conf"
+  echo -e "${GREEN}SDDM Wayland configuration written to /etc/sddm.conf.d/10-wayland.conf${ENDCOLOR}"
 }
 
 # Clean up
@@ -1260,13 +1260,13 @@ clean_up() {
   # Hide or delete README.md based on whether installed as bare repository or not
   # Check if the bare repository exists and is readable
   if [ -e "$FILE_PATH/dotfiles" ]; then
-    echo "${GREEN}Hiding README.md and Installers in ~/.config/scripts${ENDCOLOR}."
-    echo "${GREEN}moving...${ENDCOLOR}"
+    echo -e "${GREEN}Hiding README.md and Installers in ~/.config/scripts${ENDCOLOR}."
+    echo -e "${GREEN}moving...${ENDCOLOR}"
     mv README.md ~/.config/scripts/README.md || error_exit "${YELLOW}Failed to hide README.md${ENDCOLOR}."
     git --git-dir="$HOME/GitHub/dotfiles" --work-tree="$HOME" assume-unchanged README.md || error_exit "${YELLOW}Failed to ignore changes to README.md and Installers${ENDCOLOR}."
   else
-    echo "${YELLOW}Deletinging README.md Installers and .git folder${ENDCOLOR}."
-    echo "${GREEN}Removing...${ENDCOLOR}"
+    echo -e "${YELLOW}Deletinging README.md Installers and .git folder${ENDCOLOR}."
+    echo -e "${GREEN}Removing...${ENDCOLOR}"
     rm -rf README.md install.sh .git || error_exit "${YELLOW}Failed to remove README.md Installers and .git folder${ENDCOLOR}."
   fi
   # Add fastfetch to profile.d for all users
