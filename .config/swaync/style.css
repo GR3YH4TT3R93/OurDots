@@ -58,6 +58,80 @@
   border-radius: 4px;
 }
 
+.widget-mpris {
+  background-color: #282c3419;
+  border: 1px solid #98c379;
+  border-radius: 6px;
+  margin: 6px;
+  padding: 8px;
+}
+
+.widget-mpris-player {
+  background-color: #3e4452cc;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 4px 0;
+}
+
+.widget-mpris-album-art {
+  margin-right: 12px;
+  border-radius: 4px;
+}
+
+.widget-mpris-title {
+  color: #98c379;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.widget-mpris-artist {
+  color: #abb2bf;
+  font-size: 12px;
+}
+
+.widget-mpris-album {
+  color: #5c6370;
+  font-size: 11px;
+}
+
+/* Media control buttons */
+.widget-mpris button {
+  background-color: #98c37933;
+  color: #98c379;
+  border: 1px solid #98c379;
+  border-radius: 4px;
+  margin: 2px;
+}
+
+.widget-mpris button:hover {
+  background-color: #98c379;
+  color: #282c34;
+}
+
+/* Progress bar container */
+.widget-mpris-player > box > box > scale {
+  background-color: #3e4452;
+  border-radius: 2px;
+  min-height: 4px;
+}
+/* Progress bar */
+.widget-mpris-player > box > box > scale trough {
+  background-color: #5c6370;
+  border-radius: 2px;
+  min-height: 4px;
+}
+
+/* Progress bar background track */
+.widget-mpris-player > box > box > scale trough progress {
+  background-color: #98c379;
+  border-radius: 2px;
+  min-height: 4px;
+}
+
+/* Center the playback buttons */
+.widget-mpris-player > box > box > box {
+  justify-content: center;
+}
 
 /* dark = { */
 /* 		black = "#181a1f", */
